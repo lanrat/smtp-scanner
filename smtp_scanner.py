@@ -31,7 +31,7 @@ class smtp_server:
 
     def __repr__(self):
         '''return the result as a printable string'''
-        return "["+ip+"]\n\tESMTP: "+str(self.esmtp)+"\n\tTLS: "+str(self.tls)+"\n\tSSL: ["+str(self.ssl_cipher_name)+":"+str(self.ssl_cipher_version)+":"+str(self.ssl_cipher_bits)+"]\n\tCert: "+str(self.ssl_cert != None)
+        return "["+self.ip+"]\n\tESMTP: "+str(self.esmtp)+"\n\tTLS: "+str(self.tls)+"\n\tSSL: ["+str(self.ssl_cipher_name)+":"+str(self.ssl_cipher_version)+":"+str(self.ssl_cipher_bits)+"]\n\tCert: "+str(self.ssl_cert != None)
 
 
 class smtp_scanner:
@@ -68,14 +68,17 @@ class smtp_scanner:
         '''attempt to connect to the IP-PORT to establish a connection'''
         smtpSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
         smtpSocket.settimeout(5)
-        smtpSocket.connect((ip, port))
-        # Read server response
-        recv = smtpSocket.recv(1024)
-        if recv[:3] != '220':
-            if DEBUG:
-                print '220 reply not received from '+ip+':'+str(port)
+        try:
+            smtpSocket.connect((ip, port))
+            # Read server response
+            recv = smtpSocket.recv(1024)
+            if recv[:3] != '220':
+                if DEBUG:
+                    print '220 reply not received from '+ip+':'+str(port)
+                return False
+            return smtpSocket
+        except socket.timeout:
             return False
-        return smtpSocket
 
     def ehlo_helo(self, conn, server_result):
         '''runs both helo and ehlo on the server to determine if ESMTP is suppported
