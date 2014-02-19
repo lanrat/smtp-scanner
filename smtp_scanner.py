@@ -31,20 +31,23 @@ class smtp_server:
 
     def __repr__(self):
         '''return the result as a printable string'''
-        return "["+self.ip+"]\n\tESMTP: "+str(self.esmtp)+"\n\tTLS: "+str(self.tls)+"\n\tSSL: ["+str(self.ssl_cipher_name)+":"+str(self.ssl_cipher_version)+":"+str(self.ssl_cipher_bits)+"]\n\tCert: "+str(self.ssl_cert != None)
+        return "[%s]\n\tESMTP: %s\n\tTLS: %s\n\tSSL: [%s:%s:%s]\n\tCert: %s" %\
+                        (self.ip, str(self.esmtp), str(self.tls),
+                        str(self.ssl_cipher_name), str(self.ssl_cipher_version),
+                        str(self.ssl_cipher_bits), str(self.ssl_cert != None))
 
 
 class smtp_scanner:
     '''class to hold all methods related to scanning and querying
     smtp servers'''
 
-    def queryServer(self, ip):
+    def queryServer(self, ip, timeout=5):
         '''queries a server and returns the results of the server
         in question'''
     
         server_result = smtp_server(ip)
 
-        conn = self.connect(ip,25)
+        conn = self.connect(ip,25, timeout)
         if not conn:
             if DEBUG:
                 print "unable to connect to server: "+ip
@@ -64,10 +67,10 @@ class smtp_scanner:
         return server_result
 
 
-    def connect(self, ip, port):
+    def connect(self, ip, port, timeout=5):
         '''attempt to connect to the IP-PORT to establish a connection'''
         smtpSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
-        smtpSocket.settimeout(5)
+        smtpSocket.settimeout(timeout)
         try:
             smtpSocket.connect((ip, port))
             # Read server response
