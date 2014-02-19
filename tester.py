@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import sys
 from smtp_scanner import *
 from mx_lookup import *
