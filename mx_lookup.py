@@ -53,7 +53,7 @@ class MXLookup:
     Returns:  List of IPv4 addresses of MX records for domain, sorted by
               preference, low to high.  Returns one IP per preference level.
     """
-    def mx_lookup(self, domain, nameservers=None):
+    def mx_lookup(self, domain, nameservers=None, includepref=False):
 
         res = self.resolver
 
@@ -65,17 +65,30 @@ class MXLookup:
         # Get MX records for domain
         records = res.query(domain, 'MX')
         # Sort by preference
-        sortRecords = sorted(records, key=lambda rec: rec.exchange)
-        sortRecords = sorted(sortRecords, key=lambda rec: rec.preference)
+        sortRecords = sorted(records, key=lambda rec: rec.preference)
 
+        if includepref:
+            ipList = {}
+        else:
+            ipList = []
+
+        # Go through each of the MX records
         lastPref = -1
-        ipList = []
         for rec in sortRecords:
+
+            # Only look at one record per preference
             if rec.preference > lastPref:
                 lastPref = rec.preference
                 ip = res.query(rec.exchange, 'A')
+
+                # Sort the results so we always get the same IP address
+                ip = sorted(ip, key=lambda addr: addr.address)
+
                 if ip is not None:
-                    ipList.append(ip[0].address)
+                    if includepref:
+                        ipList[rec.preference] = ip[0].address
+                    else:
+                        ipList.append(ip[0].address)
                     if DEBUG:
                         print "Host: %s, Preference: %s" % \
                                                 (rec.exchange, rec.preference)

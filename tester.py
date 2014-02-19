@@ -22,6 +22,10 @@ tls = {}
 tls[True] = []
 tls[False] = []
 
+ssl = {}
+ssl[True] = []
+ssl[False] = []
+
 cert = {}
 cert[True] = []
 cert[False] = []
@@ -29,13 +33,15 @@ cert[False] = []
 for line in fd:
     line = line.replace("\n", "")
     print ">>>---- %s ----<<<" % line
-    ipList = mxdef.mx_lookup(line)
-    for ip in ipList:
+    ipList = mxdef.mx_lookup(line, includepref=True)
+    for pref in sorted(ipList.keys()):
+        ip = ipList[pref]
         serv = scanner.queryServer(ip, timeout=to)
         if serv is not None:
-            esmtp[serv.esmtp == True].append(line)
-            tls[serv.tls == True].append(line)
-            cert[serv.ssl_cert != None].append(line)
+            esmtp[serv.esmtp == True].append("%s:%s" % (line, pref))
+            tls[serv.tls == True].append("%s:%s" % (line, pref))
+            ssl[serv.ssl_cipher_name != None].append("%s:%s" % (line, pref))
+            cert[serv.ssl_cert != None].append("%s:%s" % (line, pref))
             
         print serv
         print "==========================================="
@@ -49,6 +55,9 @@ print "\tDon't support: %d" % len(esmtp[False]), esmtp[False]
 
 print "TLS\n\tSupport: %d" % len(tls[True]), tls[True]
 print "\tDon't support: %d" % len(tls[False]), tls[False]
+
+print "SSL\n\tSupport: %d" % len(ssl[True]), ssl[True]
+print "\tDon't support: %d" % len(ssl[False]), ssl[False]
 
 print "Certs\n\tValid: %d" % len(cert[True]), cert[True]
 print "\tInvalid: %d" % len(cert[False]), cert[False]
