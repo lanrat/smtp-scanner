@@ -63,7 +63,10 @@ class MXLookup:
             self.set_nameservers(nameservers, res)
 
         # Get MX records for domain
-        records = res.query(domain, 'MX')
+        try:
+            records = res.query(domain, 'MX')
+        except:
+            return None
         # Sort by preference
         sortRecords = sorted(records, key=lambda rec: rec.preference)
 
@@ -95,3 +98,17 @@ class MXLookup:
                         print "\t%s" % ip[0].address
 
         return ipList
+
+
+if __name__ == "__main__":
+    DEBUG = True
+    mx = MXLookup()
+    try:
+        line = raw_input("Domain: ")
+        while line is not None:
+            line = line.replace("\n", "")
+            print ">>>>>_____ %s _____<<<<<" % line
+            mx.mx_lookup(line)
+            line = raw_input("Domain: ")
+    except EOFError:
+        pass
