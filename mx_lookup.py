@@ -1,8 +1,69 @@
+#!/usr/bin/env python
+
 import re
 import sys
 import dns.resolver
 
 DEBUG = False
+
+class MXResult:
+
+    def __init__(self, domain, all_mx=False, all_ip=False):
+        self.domain = domain
+        self.all_mx = all_mx
+        self.all_ip = all_ip
+        self.mx = {}
+
+    def addMx(self, mx, pref):
+        if self.mx.get(mx) is None:
+            self.mx[mx] = {}
+            self.mx[mx]['pref'] = pref
+
+    def addIPList(self, mx, ipList):
+        if self.mx[mx].get('ip') is None:
+            self.mx[mx]['ip'] = []
+
+        self.mx[mx]['ip'].append(ipList)
+
+    def getPref(self, mx):
+        return self.mx[mx]['pref']
+
+    def mxList(self):
+        try:
+            #mxRecords = sorted(self.mx, key=lambda mx:"%s%s" % (mx['pref'], mx))
+            mxRecords = sorted(self.mx)
+            return mxRecords
+        except:
+            raise
+            return None
+
+    def ipList(self, mx):
+        try:
+            if self.all_ip:
+                return self.mx[mx]['ip']
+            else:
+                return [self.mx[mx]['ip'][0]]
+        except:
+            return None
+        
+
+    def __repr__(self):
+        printStr =  "Domain: %s\n" % self.domain
+
+        lastPref = -1
+        for mx in self.mxList():
+            if self.all_mx or lastPref < self.mx[mx]['pref']:
+                lastPref = self.mx[mx]['pref']
+                printStr += "  MX: %s\n" % mx
+                printStr += "  Pref: %s\n" % self.mx[mx]['pref']
+                printStr += "  IP Addresses:\n"
+
+                for ip in self.ipList(mx):
+                    printStr += "    %s\n" % ip
+                    if not self.all_ip:
+                        break
+
+        return printStr
 
 class MXLookup:
 
@@ -42,6 +103,29 @@ class MXLookup:
         res.nameservers = servers
 
     """
+    Function: get_mx_records
+    Description: Queries DNS servers to get MX records for domain.  Returns a
+                 list sorted by preference.
+    Parameters:
+        domain - domain name to look up MX records for
+        res (optional) - Resolver object to use in query
+    Returns:    List of MX records for domain, sorted by preference
+    """
+    def get_mx_records(self, domain, res=None):
+        if res is None:
+            res = self.resolver
+
+        # Get MX records for domain
+        try:
+            records = res.query(domain, 'MX')
+        except:
+            return None
+
+        # Sort by preference
+        return sorted(records, key=lambda rec: rec.preference)
+
+
+    """
     Function: mx_lookup
     Description: Looks up the MX records for domain.  If nameservers is specified,
                  attempts to use those, otherwise uses default name servers.
@@ -53,7 +137,7 @@ class MXLookup:
     Returns:  List of IPv4 addresses of MX records for domain, sorted by
               preference, low to high.  Returns one IP per preference level.
     """
-    def mx_lookup(self, domain, nameservers=None, includepref=False):
+    def mx_lookup(self, domain, nameservers=None, all_mx=False, all_ip=False):
 
         res = self.resolver
 
@@ -62,42 +146,29 @@ class MXLookup:
             res = dns.resolver.Resolver()
             self.set_nameservers(nameservers, res)
 
-        # Get MX records for domain
-        try:
-            records = res.query(domain, 'MX')
-        except:
-            return None
-        # Sort by preference
-        sortRecords = sorted(records, key=lambda rec: rec.preference)
+        sortRecords = self.get_mx_records(domain, res)
 
-        if includepref:
-            ipList = {}
-        else:
-            ipList = []
+        mxResult = MXResult(domain, all_mx, all_ip)
 
         # Go through each of the MX records
-        lastPref = -1
         for rec in sortRecords:
-
-            # Only look at one record per preference
-            if rec.preference > lastPref:
-                lastPref = rec.preference
-                ip = res.query(rec.exchange, 'A')
-
+            mxResult.addMx(rec.exchange, rec.preference)
+            ip = res.query(rec.exchange, 'A')
+            if ip is not None:
                 # Sort the results so we always get the same IP address
                 ip = sorted(ip, key=lambda addr: addr.address)
+                for i in ip:
+                    mxResult.addIPList(rec.exchange, i.address)
 
-                if ip is not None:
-                    if includepref:
-                        ipList[rec.preference] = ip[0].address
-                    else:
-                        ipList.append(ip[0].address)
-                    if DEBUG:
-                        print "Host: %s, Preference: %s" % \
-                                                (rec.exchange, rec.preference)
-                        print "\t%s" % ip[0].address
+                if DEBUG:
+                    print "Host: %s, Preference: %s" % \
+                                            (rec.exchange, rec.preference)
+                    print "\t%s" % ip[0].address
 
-        return ipList
+        return mxResult
+
+
+
 
 
 if __name__ == "__main__":
