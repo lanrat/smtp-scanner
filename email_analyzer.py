@@ -50,4 +50,5 @@ sys.stderr.write("\n")
 print "Total emails: %d" % linesRead
 for dom in sorted(emailDict, key = lambda el: -emailDict[el]):
     print "%s" % dom
-    print "\t%d" % emailDict[dom]
+    print "\tTotal: %d" % emailDict[dom]
+    print "\tFraction: %f%%" % (100 * float(emailDict[dom]) / linesRead)
