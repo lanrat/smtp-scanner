@@ -17,7 +17,6 @@ mxgoogle = MXLookup(['8.8.8.8'])
 
 fd = open(sys.argv[1])
 
-to = 5
 scanner = smtp_scanner()
 
 esmtp = {}
@@ -43,7 +42,7 @@ for line in fd:
     for mx in mxList.mxList():
         pref = mxList.getPref(mx)
         for ip in mxList.ipList(mx):
-            serv = scanner.queryServer(ip, timeout=to)
+            serv = scanner.queryServer(ip)
             if serv is not None:
                 esmtp[serv.esmtp == True].append("%s:%s" % (line, pref))
                 tls[serv.tls == True].append("%s:%s" % (line, pref))
