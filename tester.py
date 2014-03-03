@@ -12,7 +12,7 @@ mxgoogle = MXLookup(['8.8.8.8'])
 
 # Set round robin for nameservers
 # TODO: Modify this to take a file input of nameservers
-mxdef = MXLookup(['8.8.8.8', '8.8.4.4'], roundRobin=True)
+mxdef = MXLookup(['8.8.8.8', '0.0.0.0', '8.8.4.4'], roundRobin=True)
 
 fd = open(sys.argv[1])
 

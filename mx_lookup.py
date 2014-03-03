@@ -74,6 +74,7 @@ class MXLookup:
 	# Nameservers 
 	self.roundRobin = roundRobin
 	self.nextServer = 0
+	self.nameservers = []
         if nameservers is not None:
 	    self.nameservers = nameservers
             self.set_nameservers(nameservers);
@@ -124,10 +125,34 @@ class MXLookup:
         try:
             records = res.query(domain, 'MX')
         except:
+	    print "Nameserver failed: %s" % (res.nameservers)
             return None
 
         # Sort by preference
         return sorted(records, key=lambda rec: rec.preference)
+
+    """
+    Function: mx_round_robin
+    Description: Sets resolver to next nameserver in round robin.
+    Returns: DNS resolver set to next nameserver
+    """
+    def mx_round_robin(self, remove=False):
+	res = self.resolver
+
+	if self.roundRobin:
+	    # remove failed nameserver
+            if remove:
+                del self.nameservers[self.nextServer]
+	    else:
+		self.nextServer = self.nextServer + 1
+	    if self.nextServer >= len(self.nameservers):
+		self.nextServer = 0
+
+	    res = dns.resolver.Resolver()
+	    self.set_nameservers([self.nameservers[self.nextServer]], res)
+	    print "Using nameserver: %s" % (self.nameservers[self.nextServer])
+
+	return res
 
 
     """
@@ -152,16 +177,15 @@ class MXLookup:
             self.set_nameservers(nameservers, res)
 
 	# Handle nameserver round robin
-	if self.roundRobin:
-	    res = dns.resolver.Resolver()
-	    self.set_nameservers([self.nameservers[self.nextServer]], res)
-	    print "Using nameserver: %s" % (self.nameservers[self.nextServer])
+	res = self.mx_round_robin()
 
-	    self.nextServer = self.nextServer + 1
-	    if self.nextServer >= len(self.nameservers):
-		self.nextServer = 0
-
+	# Get records and remove bad nameservers
         sortRecords = self.get_mx_records(domain, res)
+        while sortRecords is None and len(self.nameservers):
+	    res = self.mx_round_robin(remove=True)
+            sortRecords = self.get_mx_records(domain, res)
+	if sortRecords is None:
+	    return None
 
         mxResult = MXResult(domain, all_mx, all_ip)
 
@@ -182,6 +206,13 @@ class MXLookup:
 
         return mxResult
 
+
+    def __del__(self):
+	# save list of good nameservers
+        f = open("good_nameservers", "w")
+	for name in self.nameservers:
+	    f.write(name + '\n')
+        f.close()        
 
 
 
