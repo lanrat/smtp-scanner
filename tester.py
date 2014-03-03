@@ -14,6 +14,13 @@ mxgoogle = MXLookup(['8.8.8.8'])
 # TODO: Modify this to take a file input of nameservers
 mxdef = MXLookup(['8.8.8.8', '0.0.0.0', '8.8.4.4'], roundRobin=True)
 
+names = []
+f = open('nameservers', 'r')
+for line in f:
+    names.append(line.strip());
+f.close
+mxdef = MXLookup(names, roundRobin=True)
+
 fd = open(sys.argv[1])
 
 scanner = smtp_scanner()
