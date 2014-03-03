@@ -67,10 +67,15 @@ class MXResult:
 
 class MXLookup:
 
-    def __init__(self, nameservers=None):
+    def __init__(self, nameservers=None, roundRobin=False):
         # Default resolver
         self.resolver = dns.resolver.Resolver()
+
+	# Nameservers 
+	self.roundRobin = roundRobin
+	self.nextServer = 0
         if nameservers is not None:
+	    self.nameservers = nameservers
             self.set_nameservers(nameservers);
 
     """
@@ -145,6 +150,16 @@ class MXLookup:
         if nameservers is not None:
             res = dns.resolver.Resolver()
             self.set_nameservers(nameservers, res)
+
+	# Handle nameserver round robin
+	if self.roundRobin:
+	    res = dns.resolver.Resolver()
+	    self.set_nameservers([self.nameservers[self.nextServer]], res)
+	    print "Using nameserver: %s" % (self.nameservers[self.nextServer])
+
+	    self.nextServer = self.nextServer + 1
+	    if self.nextServer >= len(self.nameservers):
+		self.nextServer = 0
 
         sortRecords = self.get_mx_records(domain, res)
 

@@ -7,13 +7,12 @@ if len(sys.argv) != 2:
     print "Please specify a file containing a newline-separated list of domains"
     exit(1)
 
-'''
-Bind server is up and running on 127.0.0.1
-Still need to add all zones. The zone file I tested was small. 
-I'm not sure how well it will work with larger zone files like com and net
-'''
 mxdef = MXLookup()
 mxgoogle = MXLookup(['8.8.8.8'])
+
+# Set round robin for nameservers
+# TODO: Modify this to take a file input of nameservers
+mxdef = MXLookup(['8.8.8.8', '8.8.4.4'], roundRobin=True)
 
 fd = open(sys.argv[1])
 
