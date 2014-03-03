@@ -191,8 +191,11 @@ class MXLookup:
 
         # Go through each of the MX records
         for rec in sortRecords:
-            mxResult.addMx(rec.exchange, rec.preference)
-            ip = res.query(rec.exchange, 'A')
+	    mxResult.addMx(rec.exchange, rec.preference)
+	    try:
+	        ip = res.query(rec.exchange, 'A')
+	    except:
+                ip = None
             if ip is not None:
                 # Sort the results so we always get the same IP address
                 ip = sorted(ip, key=lambda addr: addr.address)
