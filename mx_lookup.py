@@ -44,7 +44,7 @@ class MXResult:
             else:
                 return [self.mx[mx]['ip'][0]]
         except:
-            return None
+            return []
         
 
     def __repr__(self):
