@@ -101,7 +101,7 @@ class smtp_scanner:
             self.server_result.esmtp = False
 
             '''attempt again with HELO'''
-            ehloCommand = 'HELO '+SMTP_IDENT+'\r\n'
+            heloCommand = 'HELO '+SMTP_IDENT+'\r\n'
             self.conn.send(heloCommand)
             recv = self.conn.recv(1024)
             if recv[:3] != '250':
