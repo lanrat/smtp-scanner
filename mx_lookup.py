@@ -122,14 +122,24 @@ class MXLookup:
             res = self.resolver
 
         # Get MX records for domain
-        try:
-            records = res.query(domain, 'MX')
-        except:
+        while len(self.nameservers):
+            try:
+                records = res.query(domain, 'MX')
+		# Sort by preference
+		return sorted(records, key=lambda rec: rec.preference)
+            except dns.resolver.NoAnswer:
+		return None
+		'''
+                try:
+                    records = res.query(domain, 'A')
+   		    return records
+	        except:
+	            print "Nameserver failed: %s" % (res.nameservers)
+		'''
 	    print "Nameserver failed: %s" % (res.nameservers)
-            return None
+	    res = self.mx_round_robin(remove=True)
 
-        # Sort by preference
-        return sorted(records, key=lambda rec: rec.preference)
+        return None
 
     """
     Function: mx_round_robin
@@ -147,6 +157,9 @@ class MXLookup:
 		self.nextServer = self.nextServer + 1
 	    if self.nextServer >= len(self.nameservers):
 		self.nextServer = 0
+	    
+	    if len(self.nameservers) == 0:
+		print "All nameservers have failed."
 
 	    res = dns.resolver.Resolver()
 	    self.set_nameservers([self.nameservers[self.nextServer]], res)
@@ -177,13 +190,11 @@ class MXLookup:
             self.set_nameservers(nameservers, res)
 
 	# Handle nameserver round robin
-	res = self.mx_round_robin()
+	#res = self.mx_round_robin()
 
 	# Get records and remove bad nameservers
         sortRecords = self.get_mx_records(domain, res)
-        while sortRecords is None and len(self.nameservers):
-	    res = self.mx_round_robin(remove=True)
-            sortRecords = self.get_mx_records(domain, res)
+
 	if sortRecords is None:
 	    return None
 
@@ -191,6 +202,7 @@ class MXLookup:
 
         # Go through each of the MX records
         for rec in sortRecords:
+	    print "%s" % (rec.exchange)
 	    mxResult.addMx(rec.exchange, rec.preference)
 	    try:
 	        ip = res.query(rec.exchange, 'A')

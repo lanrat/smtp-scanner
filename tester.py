@@ -2,17 +2,17 @@
 import sys
 from smtp_scanner import *
 from mx_lookup import *
+#from database import *
 
 if len(sys.argv) != 2:
     print "Please specify a file containing a newline-separated list of domains"
     exit(1)
 
-mxdef = MXLookup()
-mxgoogle = MXLookup(['8.8.8.8'])
-
 # Set round robin for nameservers
 # TODO: Modify this to take a file input of nameservers
 mxdef = MXLookup(['8.8.8.8', '0.0.0.0', '8.8.4.4'], roundRobin=True)
+
+#db = database()
 
 names = []
 f = open('nameservers', 'r')
@@ -42,9 +42,11 @@ cert[True] = []
 cert[False] = []
 
 for line in fd:
-    line = line.replace("\n", "")
+    line = line.strip()
     print ">>>---- %s ----<<<" % line
     mxList = mxdef.mx_lookup(line, all_mx=True, all_ip=True)
+    if mxList is None:
+        continue
     for mx in mxList.mxList():
         pref = mxList.getPref(mx)
         for ip in mxList.ipList(mx):
