@@ -86,6 +86,8 @@ class smtp_scanner:
             return smtpSocket
         except socket.timeout:
             return False
+        except socket.error:
+            return False
 
     def ehlo_helo(self):
         '''runs both helo and ehlo on the server to determine if ESMTP is suppported
