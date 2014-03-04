@@ -95,24 +95,28 @@ class smtp_scanner:
 
         '''try EHLO first, if fails fall back to HELO'''
         ehloCommand = 'EHLO '+SMTP_IDENT+'\r\n'
-        self.conn.send(ehloCommand)
-        recv = self.conn.recv(1024)
-        if recv[:3] != '250':
-            self.server_result.esmtp = False
-
-            '''attempt again with HELO'''
-            heloCommand = 'HELO '+SMTP_IDENT+'\r\n'
-            self.conn.send(heloCommand)
+        try:
+            self.conn.send(ehloCommand)
             recv = self.conn.recv(1024)
             if recv[:3] != '250':
-                '''something went very wrong'''
-                if DEBUG:
-                    print "no helo reponse: "+self.server_result.ip
-                return False
+                self.server_result.esmtp = False
+
+                '''attempt again with HELO'''
+                heloCommand = 'HELO '+SMTP_IDENT+'\r\n'
+                self.conn.send(heloCommand)
+                recv = self.conn.recv(1024)
+                if recv[:3] != '250':
+                    '''something went very wrong'''
+                    if DEBUG:
+                        print "no helo reponse: "+self.server_result.ip
+                    return False
+                else:
+                    return True
             else:
-                return True
-        else:
-            self.server_result.esmtp = True
+                self.server_result.esmtp = True
+        except socket.error as e:
+            '''unable to send data to server'''
+            return False
 
         '''the response to the EHLO command is not a sumer important metric beause we have found that
         it is not a good indecator of weeather starttls is supported'''
@@ -142,7 +146,8 @@ class smtp_scanner:
         except ssl.SSLError as err:
             if err.args[0] == 1: #verify error
                 self.server_result = self.queryServer(self.server_result.ip, ssl.CERT_NONE)
-                self.server_result.ssl_verified = False
+                if self.server_result:
+                    self.server_result.ssl_verified = False
                 return
             else:
                 self.server_result.tls = False
