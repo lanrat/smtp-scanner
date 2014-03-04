@@ -114,7 +114,7 @@ class smtp_scanner:
                     return True
             else:
                 self.server_result.esmtp = True
-        except socket.error as e:
+        except (socket.error, socket.timeout)as e:
             '''unable to send data to server'''
             return False
 
@@ -131,8 +131,13 @@ class smtp_scanner:
         '''send the server the starttls command to see if it is supported'''
         
         tlsCommand = 'STARTTLS\r\n'
-        self.conn.send(tlsCommand)
-        recv = self.conn.recv(1024)
+        try:
+            self.conn.send(tlsCommand)
+            recv = self.conn.recv(1024)
+        except (socket.error, socket.timeout)as e:
+            if DEBUG:
+                print "timeout"
+            return False
 
         if recv[:3] != '220':
             self.server_result.tls = False
