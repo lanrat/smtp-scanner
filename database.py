@@ -3,7 +3,7 @@ import sqlite3 as lite
 DEBUG = False
 
 
-class domObject:
+class DomObject:
     def __init__(self, domain):
         self.domain = domain
         self.mx = dict()
