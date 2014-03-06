@@ -2,7 +2,7 @@ import socket
 import ssl
 
 
-DEBUG = True
+DEBUG = False
 
 SMTP_IDENT = "UCSD-222"
 CERT_FILE = "cacert.pem"
