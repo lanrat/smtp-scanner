@@ -66,7 +66,8 @@ class smtp_scanner:
         '''run tls check'''
         self.trytls(ssl_state)
 
-        self.conn.close()
+        if self.conn:
+            self.conn.close()
 
         return self.server_result
 
@@ -157,6 +158,10 @@ class smtp_scanner:
             else:
                 self.server_result.tls = False
                 return False
+        except (socket.error, socket.timeout) as e:
+            self.server_result.tls = False
+            return False
+
         
         if ssl_conn != None:
             self.server_result.tls = True
