@@ -8,11 +8,11 @@ class domObject:
         self.domain = domain
         self.mx = dict()
 
-    def addServ(self, mxk, serv):
+    def add(self, mxk, perf, serv):
         if not self.mx.has_key(mxk):
-            self.mx[mxk] = []
+            self.mx[mxk] = [perf, []]
 
-        self.mx[mxk].append(serv)
+        self.mx[mxk][1].append(serv)
 
 class Database:
     """Database for storing SMTP security results"""
@@ -44,9 +44,9 @@ class Database:
     
     def add(self, dom):
         dom_id = self.add_domain(dom.domain)
-        for x, _ in dom.mx.iteritems():
-            mx_id = self.add_mx(dom_id, dom.domain, x['pref'])
-            for serv in dom.mx[x]:
+        for x, y in dom.mx.iteritems():
+            mx_id = self.add_mx(dom_id, x, y[0])
+            for serv in dom.mx[x][1]:
                 self.add_server(mx_id, serv)
 
     def add_domain(self, domain):

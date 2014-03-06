@@ -2,7 +2,7 @@ import threading
 import re
 import database
 
-domainRegEx = "[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$"
+domainRegEx = "[a-zA-Z\d-]{,63}(\.[a-zA-Z\d-]{,63})*$"
 
 
 class Enqueue(threading.Thread):

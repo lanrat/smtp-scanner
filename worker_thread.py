@@ -92,7 +92,7 @@ class Worker(threading.Thread):
                             serv = self.scanner.queryServer(ip)
                             if not serv:
                                 #TODO add result to some struct
-                                dom.addServ(mx, serv)
+                                dom.add(mx, pref, serv)
 
                     #TODO save something
                     self.save_queue.put(dom)
