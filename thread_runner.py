@@ -12,6 +12,8 @@ def done(enqueueThread, saveThread, workerThreads):
         return False
     if saveThread.queue.qsize() > 0:
         return False
+    #if enqueueThread.domains != saveThread.saved:
+    #    return False
     return True
 
 
@@ -33,6 +35,8 @@ if __name__ == '__main__':
         print "\rDomains: %d\tSaved: %d\tThreads: %d\t" % (enqueueThread.domains, saveThread.saved, nThreads )
 
         time.sleep(1)
+    
+    print "\rDomains: %d\tSaved: %d\tThreads: %d\t" % (enqueueThread.domains, saveThread.saved, nThreads )
 
     print "\nDone!"
 
