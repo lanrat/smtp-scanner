@@ -77,7 +77,6 @@ class MXLookup:
         self.nameservers = []
         if nameservers is not None:
             self.nameservers = nameservers
-            self.set_nameservers(nameservers);
 
     """
     Function: set_nameservers
@@ -128,7 +127,7 @@ class MXLookup:
                 # Sort by preference
                 return sorted(records, key=lambda rec: rec.preference)
             except dns.resolver.NoAnswer:
-                return None
+                #return None
                 '''
                     try:
                         records = res.query(domain, 'A')
@@ -136,8 +135,8 @@ class MXLookup:
                     except:
                     print "Nameserver failed: %s" % (res.nameservers)
                 '''
-        print "Nameserver failed: %s" % (res.nameservers)
-        res = self.mx_round_robin(remove=True)
+                print "Nameserver failed: %s" % (res.nameservers)
+                res = self.mx_round_robin(remove=True)
 
         return None
 
@@ -160,6 +159,7 @@ class MXLookup:
             
             if len(self.nameservers) == 0:
                 print "All nameservers have failed."
+                sys.exit(0)
 
             res = dns.resolver.Resolver()
             self.set_nameservers([self.nameservers[self.nextServer]], res)
@@ -189,9 +189,6 @@ class MXLookup:
             res = dns.resolver.Resolver()
             self.set_nameservers(nameservers, res)
 
-        # Handle nameserver round robin
-        #res = self.mx_round_robin()
-
         # Get records and remove bad nameservers
         sortRecords = self.get_mx_records(domain, res)
 
@@ -217,7 +214,7 @@ class MXLookup:
 
                 if DEBUG:
                     print "Host: %s, Preference: %s" % \
-                                            (rec.exchange, rec.preference)
+                            (rec.exchange, rec.preference)
                     print "\t%s" % ip[0].address
 
         return mxResult
@@ -228,8 +225,7 @@ class MXLookup:
         f = open("good_nameservers", "w")
         for name in self.nameservers:
             f.write(name + '\n')
-            f.close()        
-
+        f.close()        
 
 
 

@@ -43,7 +43,7 @@ for line in fd:
     print ">>>---- %s ----<<<" % line
     if not pattern.match(line):
         print "Error: Not a valid domain name\n"
-	continue
+        continue
     mxList = mxdef.mx_lookup(line, all_mx=True, all_ip=True)
     if mxList is None:
         continue
