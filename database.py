@@ -25,9 +25,9 @@ class Database:
         if self.con: self.con.close()
     
     def add(self, dom):
-        dom_id = self.addDomain(dom[0])
-        for mx in domObject[1]:
-            mx_id = self.addMX(dom_id, dom[0], mx[0]['Pref'])
+        dom_id = self.addDomain(dom.domain)
+        for mx in domObject.mx:
+            mx_id = self.addMX(dom_id, dom.domain, mx[0]['Pref'])
             for serv in mx[1]:
                 self.addServ(mx_id, serv)
 
