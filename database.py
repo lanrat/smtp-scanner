@@ -3,9 +3,10 @@ import sqlite3 as lite
 DEBUG = False
 
 class Database:
+    """Database for storing SMTP security results"""
 
     def __init__(self):
-        """Initialize the database if the tables have not already been created"""
+        """Initialize the database"""
         self.con = lite.connect('database.db')
         self.cur = self.con.cursor()
 
@@ -15,23 +16,28 @@ class Database:
             print "SQlite version %s" % data
 
         # Create initial tables
-        self.cur.execute("CREATE TABLE IF NOT EXISTS Domains(Id INTEGER PRIMARY KEY AUTOINCREMENT, Domain TXT);")
-        self.cur.execute("CREATE TABLE IF NOT EXISTS Mx(Id INTEGER PRIMARY KEY AUTOINCREMENT, Domain_id INT, Domain TXT, Priority INT);")
-        self.cur.execute("CREATE TABLE IF NOT EXISTS Server(Id INTEGER PRIMARY KEY AUTOINCREMENT, Mx_id INT, IP TXT, ESMTP BIT, TLS BIT, \
-                SSL_Ciper_Name TXT, SSL_Cipher_Version TXT, SSL_Cipher_Bits INT, SSL_Verified BIT);")
+        self.cur.execute("CREATE TABLE IF NOT EXISTS Domains(Id INTEGER \
+                PRIMARY KEY AUTOINCREMENT, Domain TXT);")
+        self.cur.execute("CREATE TABLE IF NOT EXISTS Mx(Id INTEGER PRIMARY \
+                KEY AUTOINCREMENT, Domain_id INT, Domain TXT, Priority INT);")
+        self.cur.execute("CREATE TABLE IF NOT EXISTS Server(Id INTEGER \
+                PRIMARY KEY AUTOINCREMENT, Mx_id INT, IP TXT, ESMTP BIT, \
+                TLS BIT, SSL_Ciper_Name TXT, SSL_Cipher_Version TXT, \
+                SSL_Cipher_Bits INT, SSL_Verified BIT);")
     
     def __del__(self):
         """Cleanup"""
-        if self.con: self.con.close()
+        if self.con: 
+            self.con.close()
     
     def add(self, dom):
-        dom_id = self.addDomain(dom.domain)
-        for x in dom.mx:
-            mx_id = self.addMX(dom_id, dom.domain, x['pref'])
+        dom_id = self.add_domain(dom.domain)
+        for x, _ in dom.mx:
+            mx_id = self.add_mx(dom_id, dom.domain, x['pref'])
             for serv in dom.mx[x]:
-                self.addServ(mx_id, serv)
+                self.add_server(mx_id, serv)
 
-    def addDomain(self, domain):
+    def add_domain(self, domain):
         """Add domain record
         
         Paramaters:
@@ -44,7 +50,7 @@ class Database:
         return self.cur.lastrowid
 
 
-    def addMX(self, domain_id, domain, priority):
+    def add_mx(self, domain_id, domain, priority):
         """Add MX record
         
         Paramaters:
@@ -60,7 +66,7 @@ class Database:
         return self.cur.lastrowid
 
 
-    def addServer(self, mx_id, serv):
+    def add_server(self, mx_id, serv):
         """Add Server record
         
         Paramaters:
