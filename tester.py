@@ -41,9 +41,13 @@ cert = {}
 cert[True] = []
 cert[False] = []
 
+pattern = re.compile("[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$")
 for line in fd:
     line = line.strip()
     print ">>>---- %s ----<<<" % line
+    if not pattern.match(line):
+        print "Error: Not a valid domain name\n"
+	continue
     mxList = mxdef.mx_lookup(line, all_mx=True, all_ip=True)
     if mxList is None:
         continue
