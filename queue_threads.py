@@ -48,6 +48,7 @@ class Save(threading.thread):
         self.running = False
         self.done = False
         self.saved = 0
+        self.active = False
         self.db = database.database()
 
     def run(self):
@@ -56,8 +57,10 @@ class Save(threading.thread):
         self.running = True
 
         while True:
+            self.active = False
             result = self.queue.get()
             if result:
+                self.active = True
                 #TODO save data
                 self.saved += 1
 

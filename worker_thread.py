@@ -46,7 +46,7 @@ def start(domain_file, n=1):
         t.start()
         workerThreads.append(t)
 
-    return enqueueThread, save_queue, workerThreads
+    return enqueueThread, saveThread, workerThreads
 
 
 class Worker(threading.Thread):
