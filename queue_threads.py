@@ -8,7 +8,7 @@ domainRegEx "[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$"
 class Enqueue(threading.Thread):
     ''' thread to read domains from list and add them to a queue'''
 
-    def __init__(self,queue,filename):
+    def __init__(self, queue, filename):
         threading.Thread.__init__(self)
         self.queue = queue)
         self.fileh = open(filename)
@@ -33,7 +33,8 @@ class Enqueue(threading.Thread):
             if domainPattern.match(line):
                 self.queue.put(line)
                 domains += 1
-
+        
+        self.fh.close()
         self.running = False
         self.done = True
 
@@ -41,7 +42,7 @@ class Enqueue(threading.Thread):
 class Save(threading.thread):
     '''thread to save all queries as they finish'''
 
-    def __init__(self,queue):
+    def __init__(self, queue):
         threading.Thread.__init__(self)
         self.queue = queue
         self.running = False

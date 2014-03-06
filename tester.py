@@ -14,7 +14,7 @@ names = []
 f = open('nameservers', 'r')
 for line in f:
     names.append(line.strip());
-f.close
+f.close()
 mxdef = MXLookup(names, roundRobin=True)
 
 fd = open(sys.argv[1])
