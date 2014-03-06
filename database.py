@@ -26,7 +26,7 @@ class Database:
     
     def add(self, dom):
         dom_id = self.addDomain(dom.domain)
-        for mx in domObject.mx:
+        for mx in dom.mx:
             mx_id = self.addMX(dom_id, dom.domain, mx[0]['Pref'])
             for serv in mx[1]:
                 self.addServ(mx_id, serv)

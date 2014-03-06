@@ -49,10 +49,11 @@ class Save(threading.Thread):
         self.done = False
         self.saved = 0
         self.active = False
-        self.db = database.Database()
+        self.db = None
 
     def run(self):
         ''' main entrypoint for thread'''
+        self.db = database.Database()
 
         self.running = True
 
