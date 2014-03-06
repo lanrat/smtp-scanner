@@ -2,6 +2,18 @@ import sqlite3 as lite
 
 DEBUG = False
 
+
+class domObject:
+    def __init__(self, domain):
+        self.domain = domain
+        self.mx = dict()
+
+    def addServ(self, mxk, serv):
+        if not self.mx.has_key(mxk):
+            self.mx[mxk] = []
+
+        self.mx[mxk].append(serv)
+
 class Database:
     """Database for storing SMTP security results"""
 
@@ -32,7 +44,7 @@ class Database:
     
     def add(self, dom):
         dom_id = self.add_domain(dom.domain)
-        for x, _ in dom.mx:
+        for x, _ in dom.mx.iteritems():
             mx_id = self.add_mx(dom_id, dom.domain, x['pref'])
             for serv in dom.mx[x]:
                 self.add_server(mx_id, serv)

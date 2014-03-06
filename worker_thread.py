@@ -3,26 +3,16 @@ from mx_lookup import *
 from Queue import Queue
 import queue_threads
 import smtp_scanner
+import database
+
 
 MAX_QUEUE_SIZE = 10000
-
-class domObject:
-    def __init__(self, domain):
-        self.domain = domain
-        self.mx = dict()
-
-    def addServ(self, mx, serv):
-        if not self.mx.has_key(mx):
-            self.mx[mx] = []
-
-        self.mx[mx].append(serv)
-
 
 def get_nameservers_from_file():
     names = []
     f = open('nameservers', 'r')
     for line in f:
-        names.append(line.strip());
+        names.append(line.strip())
     f.close()
     return names
 
@@ -94,7 +84,7 @@ class Worker(threading.Thread):
                         #TODO if there are no mx reccords fall back to using A record
                         continue
 
-                    dom = domObject(domain)
+                    dom = database.domObject(domain)
                     #TODO some of the mxlist logic makes a little less sense than it should
                     for mx in mxList.mxList():
                         pref = mxList.getPref(mx)
