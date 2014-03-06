@@ -10,6 +10,7 @@ class Enqueue(threading.Thread):
 
     def __init__(self, queue, filename):
         threading.Thread.__init__(self)
+        self.daemon = True
         self.queue = queue
         self.fileh = open(filename)
         self.running = False
@@ -44,6 +45,7 @@ class Save(threading.Thread):
 
     def __init__(self, queue):
         threading.Thread.__init__(self)
+        self.daemon = True
         self.queue = queue
         self.running = False
         self.done = False

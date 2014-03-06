@@ -28,8 +28,9 @@ if __name__ == '__main__':
     enqueueThread, saveThread, workerThreads, = worker_thread.start(domain_file, n)
     nThreads = len(workerThreads)
 
-    #while not done(enqueueThread, saveThread, workerThreads):
-    while True:
+    time.sleep(0.5)
+
+    while not done(enqueueThread, saveThread, workerThreads):
         sys.stdout.write( "\rDomains: %d\tSaved: %d\tThreads: %d\t" % (enqueueThread.domains, saveThread.saved, nThreads ) )
 
         time.sleep(SLEEP_TIME)
