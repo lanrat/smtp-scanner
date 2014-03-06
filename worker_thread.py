@@ -14,8 +14,9 @@ class domObject:
     def addServ(self, mx, serv):
         if mx not in (x[0] for x in self.mx):
             self.mx.append([mx, []])
+        x for x,y in enumerate(self.mx) if y[0] == mx
 
-        self.mx[mx][1].append(serv)
+        self.mx[x][1].append(serv)
 
 
 def get_nameservers_from_file():
