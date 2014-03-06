@@ -9,14 +9,13 @@ MAX_QUEUE_SIZE = 10000
 class domObject:
     def __init__(self, domain):
         self.domain = domain
-        self.mx = []
+        self.mx = dict()
 
     def addServ(self, mx, serv):
-        if mx not in (x[0] for x in self.mx):
-            self.mx.append([mx, []])
-        x for x,y in enumerate(self.mx) if y[0] == mx
+        if not self.mx.has_key(mx):
+            self.mx[mx] = []
 
-        self.mx[x][1].append(serv)
+        self.mx[mx].append(serv)
 
 
 def get_nameservers_from_file():
