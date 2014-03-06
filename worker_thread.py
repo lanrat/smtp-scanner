@@ -107,7 +107,8 @@ class Worker(threading.Thread):
                     #TODO save something
                     self.save_queue.put(dom)
 
-                except Exception as e:
+                except IOError as e:
+                    #TODO change back to exceptopn
                     print "Exception on domain: "+domain
                     print e
 

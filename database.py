@@ -1,6 +1,6 @@
 import sqlite3 as lite
 
-DEBUG = True
+DEBUG = False
 
 class Database:
 
