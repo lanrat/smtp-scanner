@@ -31,12 +31,12 @@ if __name__ == '__main__':
     time.sleep(0.6)
 
     while not done(enqueueThread, saveThread, workerThreads):
-        #sys.stdout.write( "\rDomains: %d\tSaved: %d\tThreads: %d\t" % (enqueueThread.domains, saveThread.saved, nThreads ) )
-        print "\rDomains: %d\tSaved: %d\tThreads: %d\t" % (enqueueThread.domains, saveThread.saved, nThreads )
-
+        sys.stdout.write( "\rDomains: %d\tSaved: %d\tFailed: %d\tThreads: %d\t" % (enqueueThread.domains, saveThread.saved, worker_thread.getTotalFailures(workerThreads), nThreads ) )
+        sys.stdout.flush()
         time.sleep(1)
     
-    print "\rDomains: %d\tSaved: %d\tThreads: %d\t" % (enqueueThread.domains, saveThread.saved, nThreads )
+    sys.stdout.write( "\rDomains: %d\tSaved: %d\tThreads: %d\t" % (enqueueThread.domains, saveThread.saved, nThreads ) )
+    sys.stdout.flush()
 
     print "\nDone!"
 
