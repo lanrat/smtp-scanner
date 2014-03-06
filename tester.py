@@ -2,13 +2,13 @@
 import sys
 from smtp_scanner import *
 from mx_lookup import *
-from database import *
+from database import Database
 
 if len(sys.argv) != 2:
     print "Please specify a file containing a newline-separated list of domains"
     exit(1)
 
-db = database()
+db = Database()
 
 names = []
 f = open('nameservers', 'r')
