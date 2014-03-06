@@ -2,6 +2,13 @@
 import sys
 import worker_thread
 import time
+import datetime
+
+
+start_time = 0
+last_done = 0
+
+UPDATE_DELAY = 1
 
 def done(enqueueThread, saveThread, workerThreads):
     if not enqueueThread.done:
@@ -12,9 +19,19 @@ def done(enqueueThread, saveThread, workerThreads):
         return False
     if saveThread.queue.qsize() > 0:
         return False
-    #if enqueueThread.domains != saveThread.saved:
-    #    return False
     return True
+
+def printStatus(domains, saved, failed, nTthreads):
+    global start_time, last_done
+    running_seconds = (time.time() - start_time)
+    running_time = str(datetime.timedelta(seconds=int(running_seconds)))
+    lps = round((saved-last_done)/UPDATE_DELAY, 2)
+
+    last_done = saved
+
+    sys.stdout.write( "\rDomains: %d\tSaved: %d\tFailed: %d\tThreads: %d\tLPS: %.1f\tTime: %s" %
+            (domains, saved, failed, nThreads, lps, running_time) )
+    sys.stdout.flush()
 
 
 if __name__ == '__main__':
@@ -25,18 +42,19 @@ if __name__ == '__main__':
     n = int(sys.argv[2])
     domain_file = sys.argv[1]
 
+    start_time = time.time()
+
     enqueueThread, saveThread, workerThreads, = worker_thread.start(domain_file, n)
     nThreads = len(workerThreads)
 
     time.sleep(0.6)
 
     while not done(enqueueThread, saveThread, workerThreads):
-        #sys.stdout.write( "\rDomains: %d\tSaved: %d\tThreads: %d\t" % (enqueueThread.domains, saveThread.saved, nThreads ) )
-        print "\rDomains: %d\tSaved: %d\tThreads: %d\t" % (enqueueThread.domains, saveThread.saved, nThreads )
+        printStatus(enqueueThread.domains, saveThread.saved, worker_thread.getTotalFailures(workerThreads), nThreads)
+        
+        time.sleep(UPDATE_DELAY)
 
-        time.sleep(1)
-    
-    print "\rDomains: %d\tSaved: %d\tThreads: %d\t" % (enqueueThread.domains, saveThread.saved, nThreads )
+    printStatus(enqueueThread.domains, saveThread.saved, worker_thread.getTotalFailures(workerThreads), nThreads)
 
     print "\nDone!"
 

@@ -26,6 +26,15 @@ def working(threads):
             return True
     return False
 
+def getTotalFailures(threads):
+    ''' returns true if any of the threads are active '''
+    if not threads:
+        return 0
+    failures = 0
+    for thread in threads:
+        failures += thread.failures
+    return failures
+
 
 def start(domain_file, n=1):
     '''read domains from domain_file and then starts n worker threads'''
@@ -65,6 +74,7 @@ class Worker(threading.Thread):
         self.done = False
         self.work_done = 0
         self.active = False
+        self.failures = 0
         self.scanner = smtp_scanner.smtp_scanner()
 
     def run(self):
@@ -96,9 +106,10 @@ class Worker(threading.Thread):
 
                     #TODO save something
                     self.save_queue.put(dom)
+                    self.work_done += 1
 
-                except IOError as e:
-                    #TODO change back to exceptopn
+                except Exceptionas as e:
+                    failures += 1
                     print "Exception on domain: "+domain
                     print e
 
