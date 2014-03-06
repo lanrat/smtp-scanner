@@ -13,6 +13,7 @@ def get_nameservers_from_file():
     f.close()
     return names
 
+
 def working(threads):
     ''' returns true if any of the threads are active '''
     if not threads:
@@ -21,6 +22,7 @@ def working(threads):
         if thread.active:
             return True
     return False
+
 
 def start(domain_file, n=1):
     '''read domains from domain_file and then starts n worker threads'''
@@ -45,7 +47,6 @@ def start(domain_file, n=1):
         workerThreads.append(t)
 
     return enqueueThread, save_queue, workerThreads
-
 
 
 class Worker(threading.Thread):
@@ -85,6 +86,7 @@ class Worker(threading.Thread):
                         for ip in mxList.ipList(mx):
                             serv = scanner.queryServer(ip)
                             if not serv:
+                                #TODO add result to some struct
 
                     #TODO save something
                     self.save_queue.put()
