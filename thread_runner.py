@@ -8,7 +8,7 @@ import datetime
 start_time = 0
 last_done = 0
 
-UPDATE_DELAY = 3
+UPDATE_DELAY = 3.0
 
 def done(enqueueThread, saveThread, workerThreads):
     if not enqueueThread.done:
@@ -21,7 +21,7 @@ def done(enqueueThread, saveThread, workerThreads):
         return False
     return True
 
-def printStatus(domains, saved, failed, nTthreads):
+def printStatus(domains, saved, failed, nTthreads, sqsize):
     global start_time, last_done
     running_seconds = (time.time() - start_time)
     running_time = str(datetime.timedelta(seconds=int(running_seconds)))
@@ -29,8 +29,8 @@ def printStatus(domains, saved, failed, nTthreads):
 
     last_done = saved
 
-    sys.stdout.write( "\rDomains: %d\tSaved: %d\tFailed: %d\tThreads: %d\tLPS: %f\tTime: %s  " %
-            (domains, saved, failed, nThreads, lps, running_time) )
+    sys.stdout.write( "\rDomains: %d\tSaved: %d\tFailed: %d\tThreads: %d\tLPS: %.1f\tTime: %s\tSQS: %d  " %
+            (domains, saved, failed, nThreads, lps, running_time, sqsize) )
     sys.stdout.flush()
 
 
@@ -50,11 +50,11 @@ if __name__ == '__main__':
     time.sleep(0.6)
 
     while not done(enqueueThread, saveThread, workerThreads):
-        printStatus(enqueueThread.domains, saveThread.saved, worker_thread.getTotalFailures(workerThreads), nThreads)
+        printStatus(enqueueThread.domains, saveThread.saved, worker_thread.getTotalFailures(workerThreads), nThreads, saveThread.queue.qsize())
         
         time.sleep(UPDATE_DELAY)
 
-    printStatus(enqueueThread.domains, saveThread.saved, worker_thread.getTotalFailures(workerThreads), nThreads)
+    printStatus(enqueueThread.domains, saveThread.saved, worker_thread.getTotalFailures(workerThreads), nThreads, saveThread.queue.qsize())
 
     print "\nDone!"
 

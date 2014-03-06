@@ -4,6 +4,7 @@ from Queue import Queue
 import queue_threads
 import smtp_scanner
 import database
+import traceback #for dEBUG
 
 
 MAX_QUEUE_SIZE = 10000
@@ -92,6 +93,7 @@ class Worker(threading.Thread):
                     mxList = self.mxdef.mx_lookup(domain, all_mx=True, all_ip=True)
                     if not mxList:
                         #TODO if there are no mx reccords fall back to using A record
+                        self.failures += 1
                         continue
 
                     dom = database.DomObject(domain)
@@ -112,6 +114,9 @@ class Worker(threading.Thread):
                     self.failures += 1
                     print "Exception on domain: "+domain
                     print e
+                    traceback.print_exc()
+
+            self.domain_queue.task_done()
 
         self.done = True
         self.running = False

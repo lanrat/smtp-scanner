@@ -126,6 +126,8 @@ class MXLookup:
                 records = res.query(domain, 'MX')
                 # Sort by preference
                 return sorted(records, key=lambda rec: rec.preference)
+            except (dns.resolver.Timeout, dns.resolver.NXDOMAIN, dns.resolver.NoNameservers):
+                return None
             except dns.resolver.NoAnswer:
                 #Support A records if no MX
                 return None
