@@ -199,7 +199,8 @@ class MXLookup:
 
         # Go through each of the MX records
         for rec in sortRecords:
-            print "%s" % (rec.exchange)
+            if DEBUG:
+                print "%s" % (rec.exchange)
             mxResult.addMx(rec.exchange, rec.preference)
             try:
                 ip = res.query(rec.exchange, 'A')

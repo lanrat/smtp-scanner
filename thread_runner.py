@@ -17,8 +17,6 @@ def done(enqueueThread, saveThread, workerThreads):
     return True
 
 
-
-
 if __name__ == '__main__':
     if len(sys.argv) < 3 or not sys.argv[2].isdigit():
         print "Usage: "+sys.argv[0]+" domain_file number_of_threads"
@@ -30,7 +28,8 @@ if __name__ == '__main__':
     enqueueThread, saveThread, workerThreads, = worker_thread.start(domain_file, n)
     nThreads = len(workerThreads)
 
-    while not done(enqueueThread, saveThread, workerThreads):
+    #while not done(enqueueThread, saveThread, workerThreads):
+    while True:
         sys.stdout.write( "\rDomains: %d\tSaved: %d\tThreads: %d\t" % (enqueueThread.domains, saveThread.saved, nThreads ) )
 
         time.sleep(SLEEP_TIME)
