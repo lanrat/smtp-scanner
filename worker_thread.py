@@ -67,6 +67,7 @@ class Worker(threading.Thread):
 
     def __init__(self, domain_queue, save_queue, nameservers):
         threading.Thread.__init__(self)
+        self.daemon = True
         self.domain_queue = domain_queue
         self.save_queue = save_queue
         self.mxdef = MXLookup(nameservers, roundRobin=True)
