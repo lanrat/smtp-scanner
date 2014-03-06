@@ -8,14 +8,14 @@ import datetime
 start_time = 0
 last_done = 0
 
-UPDATE_DELAY = 1
+UPDATE_DELAY = 3
 
 def done(enqueueThread, saveThread, workerThreads):
     if not enqueueThread.done:
         return False
-    if worker_thread.working(workerThreads):
-        return False
     if saveThread.active:
+        return False
+    if worker_thread.working(workerThreads):
         return False
     if saveThread.queue.qsize() > 0:
         return False
@@ -29,7 +29,7 @@ def printStatus(domains, saved, failed, nTthreads):
 
     last_done = saved
 
-    sys.stdout.write( "\rDomains: %d\tSaved: %d\tFailed: %d\tThreads: %d\tLPS: %.1f\tTime: %s" %
+    sys.stdout.write( "\rDomains: %d\tSaved: %d\tFailed: %d\tThreads: %d\tLPS: %f\tTime: %s  " %
             (domains, saved, failed, nThreads, lps, running_time) )
     sys.stdout.flush()
 

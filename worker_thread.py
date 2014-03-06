@@ -108,8 +108,8 @@ class Worker(threading.Thread):
                     self.save_queue.put(dom)
                     self.work_done += 1
 
-                except Exceptionas as e:
-                    failures += 1
+                except Exception as e:
+                    self.failures += 1
                     print "Exception on domain: "+domain
                     print e
 

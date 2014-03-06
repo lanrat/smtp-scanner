@@ -127,7 +127,8 @@ class MXLookup:
                 # Sort by preference
                 return sorted(records, key=lambda rec: rec.preference)
             except dns.resolver.NoAnswer:
-                #return None
+                #Support A records if no MX
+                return None
                 '''
                     try:
                         records = res.query(domain, 'A')
@@ -135,8 +136,8 @@ class MXLookup:
                     except:
                     print "Nameserver failed: %s" % (res.nameservers)
                 '''
-                print "Nameserver failed: %s" % (res.nameservers)
-                res = self.mx_round_robin(remove=True)
+                '''print "Nameserver failed: %s" % (res.nameservers)
+                res = self.mx_round_robin(remove=False) #TODO?'''
 
         return None
 
@@ -163,7 +164,8 @@ class MXLookup:
 
             res = dns.resolver.Resolver()
             self.set_nameservers([self.nameservers[self.nextServer]], res)
-            print "Using nameserver: %s" % (self.nameservers[self.nextServer])
+            if DEBUG:
+                print "Using nameserver: %s" % (self.nameservers[self.nextServer])
 
         return res
 

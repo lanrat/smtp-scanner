@@ -19,7 +19,7 @@ class Database:
 
     def __init__(self):
         """Initialize the database"""
-        self.con = lite.connect('database.db')
+        self.con = lite.connect('data.db')
         self.cur = self.con.cursor()
 
         self.cur.execute('SELECT SQLITE_VERSION()')
