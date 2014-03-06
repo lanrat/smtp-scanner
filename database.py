@@ -36,9 +36,11 @@ class Database:
                 PRIMARY KEY AUTOINCREMENT, Mx_id INT, IP TXT, ESMTP BIT, \
                 TLS BIT, SSL_Ciper_Name TXT, SSL_Cipher_Version TXT, \
                 SSL_Cipher_Bits INT, SSL_Verified BIT);")
+        self.con.commit()
     
     def __del__(self):
         """Cleanup"""
+        self.con.commit()
         if self.con: 
             self.con.close()
     
@@ -48,6 +50,7 @@ class Database:
             mx_id = self.add_mx(dom_id, x, y[0])
             for serv in dom.mx[x][1]:
                 self.add_server(mx_id, serv)
+        self.con.commit()
 
     def add_domain(self, domain):
         """Add domain record
