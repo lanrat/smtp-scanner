@@ -84,13 +84,13 @@ class Worker(threading.Thread):
                         #TODO if there are no mx reccords fall back to using A record
                         continue
 
-                    dom = database.domObject(domain)
+                    dom = database.DomObject(domain)
                     #TODO some of the mxlist logic makes a little less sense than it should
                     for mx in mxList.mxList():
                         pref = mxList.getPref(mx)
                         for ip in mxList.ipList(mx):
                             serv = self.scanner.queryServer(ip)
-                            if not serv:
+                            if serv:
                                 #TODO add result to some struct
                                 dom.add(mx, pref, serv)
 
