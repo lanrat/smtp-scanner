@@ -1,7 +1,8 @@
 import sqlite3 as lite
 import sys
+from worker_thread import domObject
 
-class database:
+class Database:
 
     def __init__(self):
         """Initialize the database if the tables have not already been created"""
@@ -22,6 +23,12 @@ class database:
         """Cleanup"""
         if self.con: self.con.close()
     
+    def add(self, domObject):
+        dom_id = self.addDomain(dom[0])
+        for mx in domObject[1]:
+            mx_id = self.addMX(dom_id, dom[0], mx[0]['Pref'])
+            for serv in mx[1]:
+                self.addServ(mx_id, serv)
 
     def addDomain(self, domain):
         """Add domain record

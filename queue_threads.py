@@ -2,7 +2,7 @@ import threading
 import re
 import database
 
-domainRegEx "[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$"
+domainRegEx = "[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$"
 
 
 class Enqueue(threading.Thread):
@@ -10,7 +10,7 @@ class Enqueue(threading.Thread):
 
     def __init__(self, queue, filename):
         threading.Thread.__init__(self)
-        self.queue = queue)
+        self.queue = queue
         self.fileh = open(filename)
         self.running = False
         self.done = False
@@ -39,7 +39,7 @@ class Enqueue(threading.Thread):
         self.done = True
 
 
-class Save(threading.thread):
+class Save(threading.Thread):
     '''thread to save all queries as they finish'''
 
     def __init__(self, queue):
@@ -59,6 +59,7 @@ class Save(threading.thread):
             result = self.queue.get()
             if result:
                 #TODO save data
+                self.db.add(result)
                 self.saved += 1
 
 

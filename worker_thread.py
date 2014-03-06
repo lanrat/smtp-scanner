@@ -5,6 +5,18 @@ import queue_threads
 
 MAX_QUEUE_SIZE = 10000
 
+class domObject:
+    def __init__(self, domain):
+        self.domain = domain
+        self.mx = []
+
+    def addServ(self, mx, serv):
+        if mx not in (x[0] for x in self.mx):
+            self.mx.append([mx, []])
+
+        self.mx[mx][1].append(serv)
+
+
 def get_nameservers_from_file():
     names = []
     f = open('nameservers', 'r')
@@ -42,7 +54,7 @@ def start(domain_file, n=1):
     workerThreads = list()
 
     for i in range(n):
-        t = new Worker(domain_queue, save_queue, nameservers)
+        t = Worker(domain_queue, save_queue, nameservers)
         t.start()
         workerThreads.append(t)
 
@@ -80,6 +92,7 @@ class Worker(threading.Thread):
                         #TODO if there are no mx reccords fall back to using A record
                         continue
 
+                    dom = domObject(domain)
                     #TODO some of the mxlist logic makes a little less sense than it should
                     for mx in mxList.mxList():
                         pref = mxList.getPref(mx)
@@ -87,9 +100,10 @@ class Worker(threading.Thread):
                             serv = scanner.queryServer(ip)
                             if not serv:
                                 #TODO add result to some struct
+                                dom.addServ(mx, serv)
 
                     #TODO save something
-                    self.save_queue.put()
+                    self.save_queue.put(dom)
 
                 except Exception as e:
                     print "Exception on domain: "+domain
