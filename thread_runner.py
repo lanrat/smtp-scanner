@@ -30,7 +30,7 @@ if __name__ == '__main__':
     nThreads = len(workerThreads)
 
     while not done(enqueueThread, saveThread, worker_thread):
-        sys.stdout.write( "\rDomains: %d\tSaved: %d\tThreads: %d\t" % (enqueueThread.domains, saveThread.saved, nThreads )
+        sys.stdout.write( "\rDomains: %d\tSaved: %d\tThreads: %d\t" % (enqueueThread.domains, saveThread.saved, nThreads ) )
 
         time.sleep(SLEEP_TIME)
 
