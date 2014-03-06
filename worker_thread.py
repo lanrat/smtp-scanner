@@ -2,6 +2,7 @@ import threading
 from mx_lookup import *
 from Queue import Queue
 import queue_threads
+import smtp_scanner
 
 MAX_QUEUE_SIZE = 10000
 
@@ -73,7 +74,7 @@ class Worker(threading.Thread):
         self.done = False
         self.work_done = 0
         self.active = False
-        self.scanner = smtp_scanner()
+        self.scanner = smtp_scanner.smtp_scanner()
 
     def run(self):
         ''' main loop for worker thread'''
@@ -87,7 +88,7 @@ class Worker(threading.Thread):
                 self.active = True
 
                 try:
-                    mxList = self.mxdef.mx_lookup(domain, all_mx=True, all_ip=true)
+                    mxList = self.mxdef.mx_lookup(domain, all_mx=True, all_ip=True)
                     if not mxList:
                         #TODO if there are no mx reccords fall back to using A record
                         continue
@@ -97,7 +98,7 @@ class Worker(threading.Thread):
                     for mx in mxList.mxList():
                         pref = mxList.getPref(mx)
                         for ip in mxList.ipList(mx):
-                            serv = scanner.queryServer(ip)
+                            serv = self.scanner.queryServer(ip)
                             if not serv:
                                 #TODO add result to some struct
                                 dom.addServ(mx, serv)

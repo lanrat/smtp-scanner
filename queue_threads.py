@@ -27,14 +27,14 @@ class Enqueue(threading.Thread):
 
         domainPattern = re.compile(domainRegEx)
 
-        for line in self.fh:
+        for line in self.fileh:
             line = line.strip()
 
             if domainPattern.match(line):
                 self.queue.put(line)
-                domains += 1
+                self.domains += 1
         
-        self.fh.close()
+        self.fileh.close()
         self.running = False
         self.done = True
 
@@ -49,7 +49,7 @@ class Save(threading.Thread):
         self.done = False
         self.saved = 0
         self.active = False
-        self.db = database.database()
+        self.db = database.Database()
 
     def run(self):
         ''' main entrypoint for thread'''

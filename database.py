@@ -1,6 +1,6 @@
 import sqlite3 as lite
-import sys
-from worker_thread import domObject
+
+DEBUG = True
 
 class Database:
 
@@ -11,7 +11,8 @@ class Database:
 
         self.cur.execute('SELECT SQLITE_VERSION()')
         data = self.cur.fetchone()
-        print "SQlite version %s" % data
+        if DEBUG:
+            print "SQlite version %s" % data
 
         # Create initial tables
         self.cur.execute("CREATE TABLE IF NOT EXISTS Domains(Id INTEGER PRIMARY KEY AUTOINCREMENT, Domain TXT);")
@@ -23,7 +24,7 @@ class Database:
         """Cleanup"""
         if self.con: self.con.close()
     
-    def add(self, domObject):
+    def add(self, dom):
         dom_id = self.addDomain(dom[0])
         for mx in domObject[1]:
             mx_id = self.addMX(dom_id, dom[0], mx[0]['Pref'])
