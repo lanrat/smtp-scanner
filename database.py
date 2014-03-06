@@ -4,30 +4,70 @@ import sys
 class database:
 
     def __init__(self):
+        """Initialize the database if the tables have not already been created"""
         self.con = lite.connect('database.db')
-	cur = self.con.cursor()
+        self.cur = self.con.cursor()
 
-	cur.execute('SELECT SQLITE_VERSION()')
-	data = cur.fetchone()
-	print "SQlite version %s" % data
+        self.cur.execute('SELECT SQLITE_VERSION()')
+        data = self.cur.fetchone()
+        print "SQlite version %s" % data
 
-	# Create initial tables
-	cur.execute("CREATE TABLE IF NOT EXISTS Domains(Id INTEGER PRIMARY KEY, Domain TXT);")
-	cur.execute("CREATE TABLE IF NOT EXISTS Mx(Id INTEGER PRIMARY KEY, Domain_id INT, Domain TXT, Priority INT);")
-	cur.execute("CREATE TABLE IF NOT EXISTS Server(Id INTEGER PRIMARY KEY, Mx_id INT, IP TXT, ESMTP BIT, TLS BIT, \
-		SSL_Ciper_Name TXT, SSL_Cipher_Version TXT, SSL_Cipher_Bits INT, SSL_Verified BIT);")
-	
+        # Create initial tables
+        self.cur.execute("CREATE TABLE IF NOT EXISTS Domains(Id INTEGER PRIMARY KEY AUTOINCREMENT, Domain TXT);")
+        self.cur.execute("CREATE TABLE IF NOT EXISTS Mx(Id INTEGER PRIMARY KEY AUTOINCREMENT, Domain_id INT, Domain TXT, Priority INT);")
+        self.cur.execute("CREATE TABLE IF NOT EXISTS Server(Id INTEGER PRIMARY KEY AUTOINCREMENT, Mx_id INT, IP TXT, ESMTP BIT, TLS BIT, \
+                SSL_Ciper_Name TXT, SSL_Cipher_Version TXT, SSL_Cipher_Bits INT, SSL_Verified BIT);")
+    
     def __del__(self):
-	if self.con: self.con.close()
-	
+        """Cleanup"""
+        if self.con: self.con.close()
+    
 
     def addDomain(self, domain):
-	return
+        """Add domain record
+        
+        Paramaters:
+            domain -- string of domain to add
+        Return:
+            id of new record
+        """
+
+        self.cur.execute("INSERT INTO Domains(Domain) VALUES ('%s');" % domain)
+        return self.cur.lastrowid
 
 
-    def addMX(self, mx):
-	return
+    def addMX(self, domain_id, domain, priority):
+        """Add MX record
+        
+        Paramaters:
+            domain_id -- id of domain record
+            domain -- string of domain name
+            priority -- priority of mx record
+        Return:
+            id of new record
+        """
+
+        self.cur.execute("INSERT INTO Mx VALUES" \
+                "(NULL, %d, '%s', %d);" % (domain_id, domain, priority))
+        return self.cur.lastrowid
 
 
-    def addServer(self, serv):
-	return
+    def addServer(self, mx_id, serv):
+        """Add Server record
+        
+        Paramaters:
+            mx_id -- id of MX record
+            serv -- smtp_server object
+        Return:
+            id of new record
+        """
+
+        if serv is None:
+            return -1
+
+        self.cur.execute("INSERT INTO Server VALUES" \
+                "(NULL, %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s');" \
+                % (mx_id, serv.ip, serv.esmtp, serv.tls, \
+                serv.ssl_cipher_name, serv.ssl_cipher_version, \
+                serv.ssl_cipher_bits, serv.ssl_verified))
+        return self.cur.lastrowid
