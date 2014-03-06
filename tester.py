@@ -40,9 +40,7 @@ cert[False] = []
 pattern = re.compile("[a-zA-Z\d-]{,63}(\.[a-zA-Z\d-]{,63})*$")
 for line in fd:
     line = line.strip()
-    domain_id = db.addDomain(line)
     print ">>>---- %s ----<<<" % line
-    print "Domain_ID: %d" % domain_id
     if not pattern.match(line):
         print "Error: Not a valid domain name\n"
         continue
@@ -51,12 +49,8 @@ for line in fd:
         continue
     for mx in mxList.mxList():
         pref = mxList.getPref(mx)
-        mx_id = db.addMX(domain_id, line, pref)
-        print "MX_ID: %d" % mx_id 
         for ip in mxList.ipList(mx):
             serv = scanner.queryServer(ip)
-            serv_id = db.addServer(mx_id, serv)
-            print "Serv_ID: %d" % serv_id 
             if serv is not None:
                 esmtp[serv.esmtp == True].append("%s:%s" % (line, pref))
                 tls[serv.tls == True].append("%s:%s" % (line, pref))
