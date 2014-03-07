@@ -45,10 +45,16 @@ class Database:
             self.con.close()
     
     def add(self, dom):
+        """Add record
+        
+        Paramaters:
+            dom -- object containing domain, mx list, and server lists
+        """
+
         dom_id = self.add_domain(dom.domain)
-        for x, y in dom.mx.iteritems():
-            mx_id = self.add_mx(dom_id, x, y[0])
-            for serv in dom.mx[x][1]:
+        for __x, __y in dom.mx.iteritems():
+            mx_id = self.add_mx(dom_id, __x, __y[0])
+            for serv in dom.mx[__x][1]:
                 self.add_server(mx_id, serv)
         self.con.commit()
 
@@ -61,7 +67,8 @@ class Database:
             id of new record
         """
 
-        self.cur.execute("INSERT INTO Domains(Domain) VALUES ('%s');" % domain)
+        self.cur.execute("INSERT INTO Domains(Domain) VALUES ('%s');" \
+                % domain)
         return self.cur.lastrowid
 
 

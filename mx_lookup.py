@@ -129,7 +129,7 @@ class MXLookup:
             except (dns.resolver.Timeout, dns.resolver.NXDOMAIN, dns.resolver.NoNameservers):
                 return None
             except dns.resolver.NoAnswer:
-                #Support A records if no MX
+                #TODO:Support A records if no MX
                 return None
                 '''
                     try:
