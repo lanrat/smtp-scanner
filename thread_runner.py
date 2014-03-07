@@ -29,7 +29,7 @@ def printStatus(domains, saved, failed, nTthreads, sqsize):
 
     last_done = saved
 
-    sys.stdout.write( "\rDomains: %d\tSaved: %d\tFailed: %d\tThreads: %d\tLPS: %.1f\tTime: %s\tSQS: %d  " %
+    sys.stdout.write( "\rDomains: %d\tSaved: %d\tFailed: %d\tThreads: %d\tDPS: %.1f\tTime: %s\tSQS: %d  " %
             (domains, saved, failed, nThreads, lps, running_time, sqsize) )
     sys.stdout.flush()
 

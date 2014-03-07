@@ -93,6 +93,7 @@ class Worker(threading.Thread):
                     mxList = self.mxdef.mx_lookup(domain, all_mx=True, all_ip=True)
                     if not mxList:
                         #TODO if there are no mx reccords fall back to using A record
+                        #TODO this is the cause of most of our failures
                         self.failures += 1
                         continue
 

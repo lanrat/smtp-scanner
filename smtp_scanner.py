@@ -61,6 +61,7 @@ class smtp_scanner:
         if not self.ehlo_helo():
             if DEBUG:
                 print "helo failed"
+                self.conn.close()
             return
 
         '''run tls check'''
@@ -150,10 +151,12 @@ class smtp_scanner:
             ssl_conn = ssl.wrap_socket(self.conn, ssl_version=ssl.PROTOCOL_SSLv23, cert_reqs=ssl_required, ca_certs=CERT_FILE)
             self.server_result.ssl_verified = True
         except ssl.SSLError as err:
-            if err.args[0] == 1: #verify error
+            if err.args[0] == 1 and ssl_required != ssl.CERT_NONE: #verify error
                 self.server_result = self.queryServer(self.server_result.ip, ssl.CERT_NONE)
                 if self.server_result:
                     self.server_result.ssl_verified = False
+                if ssl_conn:
+                    ssl_conn.close()
                 return
             else:
                 self.server_result.tls = False
@@ -162,7 +165,6 @@ class smtp_scanner:
             self.server_result.tls = False
             return False
 
-        
         if ssl_conn != None:
             self.server_result.tls = True
 
@@ -175,6 +177,9 @@ class smtp_scanner:
             cert = ssl_conn.getpeercert()
             if len(cert) > 0:
                 self.server_result.ssl_cert = cert
+            
+            if ssl_conn:
+                ssl_conn.close()
 
 
 if __name__ == "__main__":
