@@ -36,8 +36,14 @@ class Database:
                 PRIMARY KEY AUTOINCREMENT, Mx_id INT, IP TXT, ESMTP BIT, \
                 TLS BIT, SSL_Ciper_Name TXT, SSL_Cipher_Version TXT, \
                 SSL_Cipher_Bits INT, SSL_Verified BIT);")
+        #create indexes
+        self.cur.execute("CREATE INDEX Domains_name_index on Domains (Domain);")
+        self.cur.execute("CREATE INDEX Mx_name_index on Mx (Domain);")
+        self.cur.execute("CREATE INDEX Domains_Mx_domain_index on Domains_Mx (Domain_id);")
+        self.cur.execute("CREATE INDEX Domains_Mx_mx_index on Domains_Mx (Mx_id);")
+        #commit changes
         self.con.commit()
-    
+
     def __del__(self):
         """Cleanup"""
         self.con.commit()
