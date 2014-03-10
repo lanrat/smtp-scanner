@@ -3,6 +3,7 @@
 import re
 import sys
 import dns.resolver
+import dns.rdtypes.ANY.MX
 
 DEBUG = False
 
@@ -129,8 +130,9 @@ class MXLookup:
             except (dns.resolver.Timeout, dns.resolver.NXDOMAIN, dns.resolver.NoNameservers):
                 return None
             except dns.resolver.NoAnswer:
-                #Support A records if no MX
-                return None
+                #TODO:Support A records if no MX
+                return [dns.rdtypes.ANY.MX.MX(rdclass=1, rdtype=15, \
+                                              exchange=domain, preference=0)]
                 '''
                     try:
                         records = res.query(domain, 'A')
@@ -218,6 +220,8 @@ class MXLookup:
                     mxResult.addIPList(rec.exchange, i.address)
 
                 if DEBUG:
+                    if rec.exchange == domain:
+                        print ">>> NO MX RECORD FOUND <<<-----------------------"
                     print "Host: %s, Preference: %s" % \
                             (rec.exchange, rec.preference)
                     print "\t%s" % ip[0].address
@@ -236,7 +240,7 @@ class MXLookup:
 
 if __name__ == "__main__":
     DEBUG = True
-    mx = MXLookup()
+    mx = MXLookup(['8.8.8.8'])
     try:
         line = raw_input("Domain: ")
         while line is not None:
