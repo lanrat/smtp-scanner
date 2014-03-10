@@ -4,7 +4,7 @@ import ssl
 
 DEBUG = False
 
-SMTP_IDENT = "UCSD-222"
+SMTP_IDENT = "cse222a.ucsd.edu"
 CERT_FILE = "cacert.pem"
 
 class smtp_server:
@@ -73,7 +73,7 @@ class smtp_scanner:
         return self.server_result
 
 
-    def connect(self, ip, port, timeout=5):
+    def connect(self, ip, port, timeout=10):
         '''attempt to connect to the IP-PORT to establish a connection'''
         smtpSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
         smtpSocket.settimeout(timeout)
