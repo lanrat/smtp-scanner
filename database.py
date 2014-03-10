@@ -31,13 +31,21 @@ class Database:
         self.cur.execute("CREATE TABLE IF NOT EXISTS Domains(Id INTEGER \
                 PRIMARY KEY AUTOINCREMENT, Domain TXT);")
         self.cur.execute("CREATE TABLE IF NOT EXISTS Mx(Id INTEGER PRIMARY \
-                KEY AUTOINCREMENT, Domain_id INT, Domain TXT, Priority INT);")
+                KEY AUTOINCREMENT, Domain TXT, Priority INT);")
+        self.cur.execute("CREATE TABLE IF NOT EXISTS Domain_Mx(Id INTEGER \
+                PRIMARY KEY AUTOINCREMENT, Domain_id INT, Mx_id INT);")
         self.cur.execute("CREATE TABLE IF NOT EXISTS Server(Id INTEGER \
                 PRIMARY KEY AUTOINCREMENT, Mx_id INT, IP TXT, ESMTP BIT, \
                 TLS BIT, SSL_Ciper_Name TXT, SSL_Cipher_Version TXT, \
                 SSL_Cipher_Bits INT, SSL_Verified BIT);")
+        #create indexes
+        self.cur.execute("CREATE INDEX Domains_name_index on Domains (Domain);")
+        self.cur.execute("CREATE INDEX Mx_name_index on Mx (Domain);")
+        self.cur.execute("CREATE INDEX Domains_Mx_domain_index on Domains_Mx (Domain_id);")
+        self.cur.execute("CREATE INDEX Domains_Mx_mx_index on Domains_Mx (Mx_id);")
+        #commit changes
         self.con.commit()
-    
+
     def __del__(self):
         """Cleanup"""
         self.con.commit()
@@ -83,9 +91,20 @@ class Database:
             id of new record
         """
 
-        self.cur.execute("INSERT INTO Mx VALUES" \
-                "(NULL, %d, '%s', %d);" % (domain_id, domain, priority))
-        return self.cur.lastrowid
+        # If Mx record doees not exists, add it
+        r = self.cur.execute("SELECT * FROM Mx WHERE Domain = '%s';" \
+                % domain).fetchone()
+        if r is not None:
+            mx_id = r[0]
+        else:
+            self.cur.execute("INSERT INTO Mx VALUES" \
+                    "(NULL, '%s', %d);" % (domain, priority))
+            mx_id = self.cur.lastrowid
+
+        self.cur.execute("INSERT INTO Domain_Mx VALUES (NULL, %d, %d);" \
+                % (domain_id, mx_id))
+
+        return mx_id
 
 
     def add_server(self, mx_id, serv):
