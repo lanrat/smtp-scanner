@@ -19,7 +19,7 @@ class Database:
 
     def __init__(self):
         """Initialize the database"""
-        self.con = lite.connect('data.db')
+        self.con = lite.connect('results.db')
         self.cur = self.con.cursor()
 
         self.cur.execute('SELECT SQLITE_VERSION()')
@@ -39,10 +39,10 @@ class Database:
                 TLS BIT, SSL_Ciper_Name TXT, SSL_Cipher_Version TXT, \
                 SSL_Cipher_Bits INT, SSL_Verified BIT);")
         #create indexes
-        self.cur.execute("CREATE INDEX Domains_name_index on Domains (Domain);")
-        self.cur.execute("CREATE INDEX Mx_name_index on Mx (Domain);")
-        self.cur.execute("CREATE INDEX Domains_Mx_domain_index on Domains_Mx (Domain_id);")
-        self.cur.execute("CREATE INDEX Domains_Mx_mx_index on Domains_Mx (Mx_id);")
+        self.cur.execute("CREATE INDEX IF NOT EXISTS Domains_name_index on Domains (Domain);")
+        self.cur.execute("CREATE INDEX IF NOT EXISTS Mx_name_index on Mx (Domain);")
+        self.cur.execute("CREATE INDEX IF NOT EXISTS Domains_Mx_domain_index on Domain_Mx (Domain_id);")
+        self.cur.execute("CREATE INDEX IF NOT EXISTS Domains_Mx_mx_index on Domain_Mx (Mx_id);")
         #commit changes
         self.con.commit()
 
@@ -59,11 +59,16 @@ class Database:
             dom -- object containing domain, mx list, and server lists
         """
 
+        if dom.mx is None:
+            return 
         dom_id = self.add_domain(dom.domain)
+        if dom_id == -1:
+            return
         for __x, __y in dom.mx.iteritems():
-            mx_id = self.add_mx(dom_id, __x, __y[0])
-            for serv in dom.mx[__x][1]:
-                self.add_server(mx_id, serv)
+            mx_id, new = self.add_mx(dom_id, __x, __y[0])
+            if new:
+                for serv in dom.mx[__x][1]:
+                    self.add_server(mx_id, serv)
         self.con.commit()
 
     def add_domain(self, domain):
@@ -75,6 +80,10 @@ class Database:
             id of new record
         """
 
+        r = self.cur.execute("SELECT * FROM Domains WHERE Domain = '%s';" \
+                % domain).fetchone()
+        if r is not None:
+            return -1
         self.cur.execute("INSERT INTO Domains(Domain) VALUES ('%s');" \
                 % domain)
         return self.cur.lastrowid
@@ -92,11 +101,13 @@ class Database:
         """
 
         # If Mx record doees not exists, add it
+        new = False
         r = self.cur.execute("SELECT * FROM Mx WHERE Domain = '%s';" \
                 % domain).fetchone()
         if r is not None:
             mx_id = r[0]
         else:
+            new = True
             self.cur.execute("INSERT INTO Mx VALUES" \
                     "(NULL, '%s', %d);" % (domain, priority))
             mx_id = self.cur.lastrowid
@@ -104,7 +115,7 @@ class Database:
         self.cur.execute("INSERT INTO Domain_Mx VALUES (NULL, %d, %d);" \
                 % (domain_id, mx_id))
 
-        return mx_id
+        return mx_id, new
 
 
     def add_server(self, mx_id, serv):
