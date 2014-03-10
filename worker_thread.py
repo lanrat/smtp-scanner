@@ -92,22 +92,19 @@ class Worker(threading.Thread):
                 try:
                     mxList = self.mxdef.mx_lookup(domain, all_mx=True, all_ip=True)
                     if not mxList:
-                        #TODO if there are no mx reccords fall back to using A record
-                        #TODO this is the cause of most of our failures
                         self.failures += 1
                         continue
 
                     dom = database.DomObject(domain)
-                    #TODO some of the mxlist logic makes a little less sense than it should
                     for mx in mxList.mxList():
                         pref = mxList.getPref(mx)
                         for ip in mxList.ipList(mx):
                             serv = self.scanner.queryServer(ip)
                             if serv:
-                                #TODO add result to some struct
+                                #add result to some struct
                                 dom.add(mx, pref, serv)
 
-                    #TODO save something
+                    #save something
                     self.save_queue.put(dom)
                     self.work_done += 1
 

@@ -53,7 +53,7 @@ if __name__ == '__main__':
         printStatus(enqueueThread.domains, saveThread.saved, worker_thread.getTotalFailures(workerThreads), nThreads, saveThread.queue.qsize())
         
         time.sleep(UPDATE_DELAY)
-
+    saveThread.queue.join()
     printStatus(enqueueThread.domains, saveThread.saved, worker_thread.getTotalFailures(workerThreads), nThreads, saveThread.queue.qsize())
 
     print "\nDone!"

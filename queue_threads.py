@@ -37,6 +37,7 @@ class Enqueue(threading.Thread):
         
         self.fileh.close()
         self.running = False
+        self.queue.join()
         self.done = True
 
 

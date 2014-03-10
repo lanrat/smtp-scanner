@@ -130,19 +130,8 @@ class MXLookup:
             except (dns.resolver.Timeout, dns.resolver.NXDOMAIN, dns.resolver.NoNameservers):
                 return None
             except dns.resolver.NoAnswer:
-                #TODO:Support A records if no MX
                 return [dns.rdtypes.ANY.MX.MX(rdclass=1, rdtype=15, \
                                               exchange=domain, preference=0)]
-                '''
-                    try:
-                        records = res.query(domain, 'A')
-                        return records
-                    except:
-                    print "Nameserver failed: %s" % (res.nameservers)
-                '''
-                '''print "Nameserver failed: %s" % (res.nameservers)
-                res = self.mx_round_robin(remove=False) #TODO?'''
-
         return None
 
     """
