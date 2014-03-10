@@ -29,13 +29,13 @@ class Database:
 
         # Create initial tables
         self.cur.execute("CREATE TABLE IF NOT EXISTS Domains(Id INTEGER \
-                PRIMARY KEY AUTOINCREMENT, Domain TXT);")
+                PRIMARY KEY AUTOINCREMENT, Domain TXT NOT NULL UNIQUE);")
         self.cur.execute("CREATE TABLE IF NOT EXISTS Mx(Id INTEGER PRIMARY \
-                KEY AUTOINCREMENT, Domain TXT, Priority INT);")
+                KEY AUTOINCREMENT, Domain TXT NOT NULL UNIQUE, Priority INT);")
         self.cur.execute("CREATE TABLE IF NOT EXISTS Domain_Mx(Id INTEGER \
-                PRIMARY KEY AUTOINCREMENT, Domain_id INT, Mx_id INT);")
+                PRIMARY KEY AUTOINCREMENT, Domain_id INT NOT NULL, Mx_id INT NOT NULL);")
         self.cur.execute("CREATE TABLE IF NOT EXISTS Server(Id INTEGER \
-                PRIMARY KEY AUTOINCREMENT, Mx_id INT, IP TXT, ESMTP BIT, \
+                PRIMARY KEY AUTOINCREMENT, Mx_id INT NOT NULL, IP TXT NOT NULL, ESMTP BIT, \
                 TLS BIT, SSL_Ciper_Name TXT, SSL_Cipher_Version TXT, \
                 SSL_Cipher_Bits INT, SSL_Verified BIT);")
         #create indexes
