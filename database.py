@@ -20,7 +20,7 @@ class Database:
 
     def __init__(self):
         """Initialize the database"""
-        self.con = lite.connect('results-leak.db')
+        self.con = lite.connect('results.db')
         self.cur = self.con.cursor()
 
         self.cur.execute('SELECT SQLITE_VERSION()')
