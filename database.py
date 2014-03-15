@@ -18,7 +18,7 @@ class DomObject:
 class Database:
     """Database for storing SMTP security results"""
 
-    def __init__(self):
+    def __init__(self,create=True):
         """Initialize the database"""
         self.con = lite.connect('results.db')
         self.cur = self.con.cursor()
@@ -28,26 +28,29 @@ class Database:
         if DEBUG:
             print "SQlite version %s" % data
 
-        # Create initial tables
-        self.cur.execute("CREATE TABLE IF NOT EXISTS Domains(Id INTEGER \
-                PRIMARY KEY AUTOINCREMENT, Domain TXT NOT NULL UNIQUE);")
-        self.cur.execute("CREATE TABLE IF NOT EXISTS Mx(Id INTEGER PRIMARY \
-                KEY AUTOINCREMENT, Domain TXT NOT NULL UNIQUE, Priority INT);")
-        self.cur.execute("CREATE TABLE IF NOT EXISTS Domain_Mx(Id INTEGER \
-                PRIMARY KEY AUTOINCREMENT, Domain_id INT NOT NULL, Mx_id INT NOT NULL);")
-        self.cur.execute("CREATE TABLE IF NOT EXISTS Server(Id INTEGER \
-                PRIMARY KEY AUTOINCREMENT, Mx_id INT NOT NULL, IP TXT NOT NULL, ESMTP BIT, \
-                TLS BIT, SSL_Ciper_Name TXT, SSL_Cipher_Version TXT, \
-                SSL_Cipher_Bits INT, SSL_Verified BIT);")
-        self.cur.execute("CREATE TABLE IF NOT EXISTS Mx_Server(Id INTEGER \
-                PRIMARY KEY AUTOINCREMENT, Mx_id INT NOT NULL, Server_id INT NOT NULL);")
-        #create indexes
-        self.cur.execute("CREATE INDEX IF NOT EXISTS Domains_name_index on Domains (Domain);")
-        self.cur.execute("CREATE INDEX IF NOT EXISTS Mx_name_index on Mx (Domain);")
-        self.cur.execute("CREATE INDEX IF NOT EXISTS Domains_Mx_domain_index on Domain_Mx (Domain_id);")
-        self.cur.execute("CREATE INDEX IF NOT EXISTS Domains_Mx_mx_index on Domain_Mx (Mx_id);")
-        #commit changes
-        self.con.commit()
+        if create:
+            # Create initial tables
+            self.cur.execute("CREATE TABLE IF NOT EXISTS Domains(Id INTEGER \
+                    PRIMARY KEY AUTOINCREMENT, Domain TXT NOT NULL UNIQUE);")
+            self.cur.execute("CREATE TABLE IF NOT EXISTS Mx(Id INTEGER PRIMARY \
+                    KEY AUTOINCREMENT, Domain TXT NOT NULL UNIQUE, Priority INT);")
+            self.cur.execute("CREATE TABLE IF NOT EXISTS Domain_Mx(Id INTEGER \
+                    PRIMARY KEY AUTOINCREMENT, Domain_id INT NOT NULL, Mx_id INT NOT NULL);")
+            self.cur.execute("CREATE TABLE IF NOT EXISTS Server(Id INTEGER \
+                    PRIMARY KEY AUTOINCREMENT, Mx_id INT NOT NULL, IP TXT NOT NULL, ESMTP BIT, \
+                    TLS BIT, SSL_Ciper_Name TXT, SSL_Cipher_Version TXT, \
+                    SSL_Cipher_Bits INT, SSL_Verified BIT);")
+            self.cur.execute("CREATE TABLE IF NOT EXISTS Mx_Server(Id INTEGER \
+                    PRIMARY KEY AUTOINCREMENT, Mx_id INT NOT NULL, Server_id INT NOT NULL);")
+            #create indexes
+            self.cur.execute("CREATE INDEX IF NOT EXISTS Domains_name_index on Domains (Domain);")
+            self.cur.execute("CREATE INDEX IF NOT EXISTS Mx_name_index on Mx (Domain);")
+            self.cur.execute("CREATE INDEX IF NOT EXISTS Domains_Mx_domain_index on Domain_Mx (Domain_id);")
+            self.cur.execute("CREATE INDEX IF NOT EXISTS Domains_Mx_mx_index on Domain_Mx (Mx_id);")
+            self.cur.execute("CREATE INDEX IF NOT EXISTS Mx_server_mx_index on Mx_server (Mx_id);")
+            self.cur.execute("CREATE INDEX IF NOT EXISTS Mx_server_domain_index on Mx_server (Server_id);")
+            #commit changes
+            self.con.commit()
 
     def __del__(self):
         """Cleanup"""
