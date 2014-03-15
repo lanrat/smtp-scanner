@@ -27,14 +27,23 @@ def working(threads):
             return True
     return False
 
-def getTotalFailures(threads):
-    ''' returns true if any of the threads are active '''
+def getFailures(threads):
+    ''' returns the total count of the failure types'''
     if not threads:
-        return 0
-    failures = 0
+        return 0, 0, 0
+    exception_failures = 0
+    smtp_failures = 0
+    domain_failures = 0
     for thread in threads:
-        failures += thread.failures
-    return failures
+        exception_failures += thread.exception_failures
+        smtp_failures += thread.smtp_failures
+        domain_failures += thread.domain_failures
+    return domain_failures, exception_failures, smtp_failures
+
+def getTotalFailures(threads):
+    ''' returns the sum of all failures ( not smtp)'''
+    domf, excf, smtpf = getFailures(threads)
+    return domf + excf
 
 
 def start(domain_file, n=1):
@@ -75,7 +84,9 @@ class Worker(threading.Thread):
         self.done = False
         self.work_done = 0
         self.active = False
-        self.failures = 0
+        self.domain_failures = 0
+        self.exception_failures = 0
+        self.smtp_failures = 0
         self.scanner = smtp_scanner.smtp_scanner()
 
     def run(self):
@@ -92,7 +103,7 @@ class Worker(threading.Thread):
                 try:
                     mxList = self.mxdef.mx_lookup(domain, all_mx=True, all_ip=True)
                     if not mxList:
-                        self.failures += 1
+                        self.domain_failures +=1
                         continue
 
                     dom = database.DomObject(domain)
@@ -100,6 +111,7 @@ class Worker(threading.Thread):
                         pref = mxList.getPref(mx)
                         for ip in mxList.ipList(mx):
                             serv = self.scanner.queryServer(ip)
+                            self.smtp_failures +=1
                             if serv:
                                 #add result to some struct
                                 dom.add(mx, pref, serv)
@@ -109,7 +121,7 @@ class Worker(threading.Thread):
                     self.work_done += 1
 
                 except Exception as e:
-                    self.failures += 1
+                    self.exception_failures += 1
                     print "Exception on domain: "+domain
                     print e
                     traceback.print_exc()

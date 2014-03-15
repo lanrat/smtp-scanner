@@ -185,7 +185,11 @@ class MXLookup:
             self.set_nameservers(nameservers, res)
 
         # Get records and remove bad nameservers
-        sortRecords = self.get_mx_records(domain, res)
+        try:
+            sortRecords = self.get_mx_records(domain, res)
+        except:
+            #invalid domain name
+            return None
 
         if sortRecords is None:
             return None

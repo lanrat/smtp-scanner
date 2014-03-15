@@ -100,7 +100,7 @@ class Database:
         Return:
             id of new record
         """
-        domain = domain.lower()
+        domain = str(domain).lower()
         # If Mx record doees not exists, add it
         new = False
         r = self.cur.execute("SELECT * FROM Mx WHERE Domain = '%s';" \
