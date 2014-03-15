@@ -131,7 +131,7 @@ class MXLookup:
                 self.mx_round_robin()
             except dns.resolver.NoAnswer:
                 return [dns.rdtypes.ANY.MX.MX(rdclass=1, rdtype=15, \
-                                              exchange=domain, preference=0)]
+                                              exchange=domain, preference=-1)]
         return None
 
     """
