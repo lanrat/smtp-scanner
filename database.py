@@ -5,6 +5,7 @@ DEBUG = False
 
 class DomObject:
     def __init__(self, domain):
+        domain = domain.lower()
         self.domain = domain
         self.mx = dict()
 
@@ -79,7 +80,7 @@ class Database:
         Return:
             id of new record
         """
-
+        domain = domain.lower()
         r = self.cur.execute("SELECT * FROM Domains WHERE Domain = '%s';" \
                 % domain).fetchone()
         if r is not None:
@@ -99,7 +100,7 @@ class Database:
         Return:
             id of new record
         """
-
+        domain = domain.lower()
         # If Mx record doees not exists, add it
         new = False
         r = self.cur.execute("SELECT * FROM Mx WHERE Domain = '%s';" \
