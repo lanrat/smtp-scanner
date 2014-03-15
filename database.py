@@ -92,6 +92,10 @@ class Database:
         return self.cur.lastrowid
 
 
+    def check_mx_record(self, domain):
+        return self.cur.execute("SELECT * FROM Mx WHERE Domain = '%s';" \
+                % domain).fetchone()
+
     def add_mx(self, domain_id, domain, priority):
         """Add MX record
         
@@ -103,12 +107,12 @@ class Database:
             id of new record
         """
         domain = domain.lower()
+
         # If Mx record doees not exists, add it
+        mx = self.check_mx_record(domain)
         new = False
-        r = self.cur.execute("SELECT * FROM Mx WHERE Domain = '%s';" \
-                % domain).fetchone()
-        if r is not None:
-            mx_id = r[0]
+        if mx is not None:
+            mx_id = mx[0]
         else:
             new = True
             self.cur.execute("INSERT INTO Mx VALUES" \
@@ -120,6 +124,9 @@ class Database:
 
         return mx_id, new
 
+    def check_server_record(self, ip):
+        return self.cur.execute("SELECT * FROM Server WHERE ip = '%s';" \
+                % serv.ip).fetchone()
 
     def add_server(self, mx_id, serv):
         """Add Server record
@@ -135,10 +142,9 @@ class Database:
             return -1
 
         new = False
-        r = self.cur.execute("SELECT * FROM Server WHERE ip = '%s';" \
-                % serv.ip).fetchone()
-        if r is not None:
-            serv_id = r[0]
+        s = self.check_server_record(serv.ip)
+        if serv is not None:
+            serv_id = s[0]
         else:
             new = True
             self.cur.execute("INSERT INTO Server VALUES" \
