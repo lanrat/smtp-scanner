@@ -122,13 +122,13 @@ class MXLookup:
             res = self.resolver
 
         # Get MX records for domain
-        while len(self.nameservers):
+        for _ in range(1, 5):
             try:
                 records = res.query(domain, 'MX')
                 # Sort by preference
                 return sorted(records, key=lambda rec: rec.preference)
             except (dns.resolver.Timeout, dns.resolver.NXDOMAIN, dns.resolver.NoNameservers):
-                return None
+                self.mx_round_robin()
             except dns.resolver.NoAnswer:
                 return [dns.rdtypes.ANY.MX.MX(rdclass=1, rdtype=15, \
                                               exchange=domain, preference=0)]
