@@ -38,6 +38,8 @@ class Database:
                 PRIMARY KEY AUTOINCREMENT, Mx_id INT NOT NULL, IP TXT NOT NULL, ESMTP BIT, \
                 TLS BIT, SSL_Ciper_Name TXT, SSL_Cipher_Version TXT, \
                 SSL_Cipher_Bits INT, SSL_Verified BIT);")
+        self.cur.execute("CREATE TABLE IF NOT EXISTS Mx_Server(Id INTEGER \
+                PRIMARY KEY AUTOINCREMENT, Mx_id INT NOT NULL, Server_id INT NOT NULL);")
         #create indexes
         self.cur.execute("CREATE INDEX IF NOT EXISTS Domains_name_index on Domains (Domain);")
         self.cur.execute("CREATE INDEX IF NOT EXISTS Mx_name_index on Mx (Domain);")
@@ -131,9 +133,21 @@ class Database:
         if serv is None:
             return -1
 
-        self.cur.execute("INSERT INTO Server VALUES" \
-                "(NULL, %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s');" \
-                % (mx_id, serv.ip, serv.esmtp, serv.tls, \
-                serv.ssl_cipher_name, serv.ssl_cipher_version, \
-                serv.ssl_cipher_bits, serv.ssl_verified))
-        return self.cur.lastrowid
+        new = False
+        r = self.cur.execute("SELECT * FROM Server WHERE ip = '%s';" \
+                % serv.ip).fetchone()
+        if r is not None:
+            serv_id = r[0]
+        else:
+            new = True
+            self.cur.execute("INSERT INTO Server VALUES" \
+                    "(NULL, %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s');" \
+                    % (mx_id, serv.ip, serv.esmtp, serv.tls, \
+                    serv.ssl_cipher_name, serv.ssl_cipher_version, \
+                    serv.ssl_cipher_bits, serv.ssl_verified))
+            serv_id = self.cur.lastrowid
+
+        self.cur.execute("INSERT INTO Mx_Server VALUES (NULL, %d, %d);" \
+                % (mx_id, serv_id))
+
+        return serv_id
