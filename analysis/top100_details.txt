@@ -1,0 +1,302 @@
+hotmail.com
+	Total: 32570577
+	Fraction: 21.361897%
+gmail.com
+	Total: 24035545
+	Fraction: 15.764069%
+yahoo.com
+	Total: 17816270
+	Fraction: 11.685065%
+aol.com
+	Total: 3478698
+	Fraction: 2.281556%
+hotmail.fr
+	Total: 1498843
+	Fraction: 0.983038%
+msn.com
+	Total: 1443843
+	Fraction: 0.946966%
+hotmail.co.uk
+	Total: 1411362
+	Fraction: 0.925663%
+comcast.net
+	Total: 1249906
+	Fraction: 0.819769%
+mail.ru
+	Total: 1248373
+	Fraction: 0.818764%
+live.com
+	Total: 1235479
+	Fraction: 0.810307%
+web.de
+	Total: 1226281
+	Fraction: 0.804275%
+yahoo.co.jp
+	Total: 997799
+	Fraction: 0.654421%
+qq.com
+	Total: 967101
+	Fraction: 0.634288%
+gmx.de
+	Total: 962019
+	Fraction: 0.630954%
+yahoo.com.tw
+	Total: 664353
+	Fraction: 0.435726%
+naver.com
+	Total: 659968
+	Fraction: 0.432850%
+sbcglobal.net
+	Total: 656127
+	Fraction: 0.430331%
+yahoo.fr
+	Total: 653994
+	Fraction: 0.428932%
+163.com
+	Total: 645368
+	Fraction: 0.423274%
+yahoo.co.uk
+	Total: 624427
+	Fraction: 0.409540%
+hotmail.it
+	Total: 596945
+	Fraction: 0.391515%
+ymail.com
+	Total: 569060
+	Fraction: 0.373226%
+t-online.de
+	Total: 517466
+	Fraction: 0.339388%
+yahoo.com.br
+	Total: 490973
+	Fraction: 0.322012%
+verizon.net
+	Total: 452062
+	Fraction: 0.296492%
+libero.it
+	Total: 446538
+	Fraction: 0.292869%
+yahoo.com.hk
+	Total: 444376
+	Fraction: 0.291451%
+googlemail.com
+	Total: 441129
+	Fraction: 0.289321%
+me.com
+	Total: 402349
+	Fraction: 0.263887%
+yandex.ru
+	Total: 386840
+	Fraction: 0.253715%
+yahoo.co.in
+	Total: 382399
+	Fraction: 0.250802%
+yahoo.es
+	Total: 380838
+	Fraction: 0.249778%
+hotmail.es
+	Total: 375309
+	Fraction: 0.246152%
+live.fr
+	Total: 369009
+	Fraction: 0.242020%
+yahoo.de
+	Total: 367178
+	Fraction: 0.240819%
+cox.net
+	Total: 362989
+	Fraction: 0.238072%
+hotmail.de
+	Total: 361863
+	Fraction: 0.237333%
+mac.com
+	Total: 358280
+	Fraction: 0.234983%
+aim.com
+	Total: 348748
+	Fraction: 0.228732%
+hanmail.net
+	Total: 339228
+	Fraction: 0.222488%
+wanadoo.fr
+	Total: 326852
+	Fraction: 0.214371%
+btinternet.com
+	Total: 320503
+	Fraction: 0.210207%
+adobe.com
+	Total: 315395
+	Fraction: 0.206856%
+bellsouth.net
+	Total: 315185
+	Fraction: 0.206719%
+orange.fr
+	Total: 313531
+	Fraction: 0.205634%
+att.net
+	Total: 296583
+	Fraction: 0.194518%
+gmx.net
+	Total: 285371
+	Fraction: 0.187165%
+wp.pl
+	Total: 282896
+	Fraction: 0.185542%
+126.com
+	Total: 278697
+	Fraction: 0.182788%
+free.fr
+	Total: 270278
+	Fraction: 0.177266%
+rediffmail.com
+	Total: 267769
+	Fraction: 0.175620%
+earthlink.net
+	Total: 240912
+	Fraction: 0.158006%
+rocketmail.com
+	Total: 240303
+	Fraction: 0.157606%
+live.co.uk
+	Total: 239042
+	Fraction: 0.156779%
+yahoo.ca
+	Total: 227493
+	Fraction: 0.149205%
+yahoo.it
+	Total: 216796
+	Fraction: 0.142189%
+yahoo.com.mx
+	Total: 201975
+	Fraction: 0.132468%
+shaw.ca
+	Total: 197057
+	Fraction: 0.129243%
+bigpond.com
+	Total: 190732
+	Fraction: 0.125094%
+charter.net
+	Total: 187787
+	Fraction: 0.123163%
+freenet.de
+	Total: 180190
+	Fraction: 0.118180%
+hotmail.co.jp
+	Total: 175967
+	Fraction: 0.115411%
+nate.com
+	Total: 171948
+	Fraction: 0.112775%
+yahoo.co.id
+	Total: 169779
+	Fraction: 0.111352%
+mundopositivo.com.br
+	Total: 169373
+	Fraction: 0.111086%
+o2.pl
+	Total: 165182
+	Fraction: 0.108337%
+live.it
+	Total: 162987
+	Fraction: 0.106897%
+bluewin.ch
+	Total: 162297
+	Fraction: 0.106445%
+alice.it
+	Total: 160435
+	Fraction: 0.105224%
+rambler.ru
+	Total: 153149
+	Fraction: 0.100445%
+bol.com.br
+	Total: 152310
+	Fraction: 0.099895%
+rogers.com
+	Total: 151077
+	Fraction: 0.099086%
+live.nl
+	Total: 148757
+	Fraction: 0.097564%
+gmx.at
+	Total: 148316
+	Fraction: 0.097275%
+arcor.de
+	Total: 146084
+	Fraction: 0.095811%
+sina.com
+	Total: 144482
+	Fraction: 0.094761%
+sympatico.ca
+	Total: 142465
+	Fraction: 0.093438%
+windowslive.com
+	Total: 140689
+	Fraction: 0.092273%
+live.com.mx
+	Total: 140667
+	Fraction: 0.092259%
+seznam.cz
+	Total: 140625
+	Fraction: 0.092231%
+laposte.net
+	Total: 136781
+	Fraction: 0.089710%
+ig.com.br
+	Total: 135810
+	Fraction: 0.089073%
+ntlworld.com
+	Total: 132925
+	Fraction: 0.087181%
+optonline.net
+	Total: 132860
+	Fraction: 0.087138%
+tiscali.it
+	Total: 130428
+	Fraction: 0.085543%
+mail.com
+	Total: 124420
+	Fraction: 0.081603%
+yahoo.com.cn
+	Total: 120887
+	Fraction: 0.079286%
+yahoo.com.au
+	Total: 120539
+	Fraction: 0.079057%
+yahoo.com.ar
+	Total: 119278
+	Fraction: 0.078230%
+live.ca
+	Total: 107418
+	Fraction: 0.070452%
+live.de
+	Total: 106388
+	Fraction: 0.069776%
+nifty.com
+	Total: 106301
+	Fraction: 0.069719%
+abv.bg
+	Total: 105691
+	Fraction: 0.069319%
+uol.com.br
+	Total: 104570
+	Fraction: 0.068584%
+yahoo.com.vn
+	Total: 99435
+	Fraction: 0.065216%
+terra.com.br
+	Total: 96850
+	Fraction: 0.063521%
+optusnet.com.au
+	Total: 94706
+	Fraction: 0.062114%
+telus.net
+	Total: 94593
+	Fraction: 0.062040%
+bk.ru
+	Total: 94040
+	Fraction: 0.061678%
+juno.com
+	Total: 93588
+	Fraction: 0.061381%
+
+    Total emails: 152470436
