@@ -9,6 +9,8 @@ import database
 
 MAX_QUEUE_SIZE = 1000
 
+DEBUG = False
+
 def get_nameservers_from_file():
     names = []
     f = open('nameservers', 'r')
@@ -171,9 +173,10 @@ class Worker(threading.Thread):
                 except Exception as e:
                     self.active = False
                     self.exception_failures += 1
-                    print "Exception on domain: "+domain
-                    print e
-                    traceback.print_exc()
+                    if DEBUG:
+                        print "Exception on domain: "+domain
+                        print e
+                        traceback.print_exc()
 
             self.domain_queue.task_done()
 
