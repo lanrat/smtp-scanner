@@ -115,17 +115,21 @@ class Worker(threading.Thread):
 
                     dom = database.DomObject(domain)
                     for mx in mxList.mxList():
-                        if self.db and self.db.check_mx_record(mx):
-                            continue
                         pref = mxList.getPref(mx)
+                        if self.db and self.db.check_mx_record(mx):
+                            dom.add(mx, pref, None) #TODO verify this
+                            continue
                         for ip in mxList.ipList(mx):
                             if self.db and self.db.check_server_record(ip):
+                                dom.add(mx, pref, smtp_scanner.smtp_server(ip)) #TODO verify this
                                 continue
                             serv = self.scanner.queryServer(ip)
-                            self.smtp_failures +=1
                             if serv:
                                 #add result to some struct
                                 dom.add(mx, pref, serv)
+                            else:
+                                self.smtp_failures +=1
+
 
                     #save something
                     self.save_queue.put(dom)
