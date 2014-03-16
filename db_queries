@@ -1,0 +1,1 @@
+select sum(num) from (select count(domains.domain), mx.domain, count(domain_mx.mx_id) num from Domain_mx, domains, mx where domain_mx.domain_id = domains.id and domain_mx.mx_id = mx.id and mx.domain like "%hotmail%" group by domain_mx.mx_id);
