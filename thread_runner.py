@@ -21,15 +21,20 @@ def done(enqueueThread, saveThread, workerThreads):
         return False
     return True
 
-def printStatus(domains, saved, failed, nTthreads, sqsize):
+def printStatus(enqueueThread, saveThread, workerThreads):
     global start_time, last_done
+    domains = enqueueThread.domains
+    saved = saveThread.saved
+    nThreads = worker_thread.getActiveThreads(workerThreads)
+    sqsize = saveThread.queue.qsize()
+    failed = worker_thread.getTotalFailures(workerThreads)
+
     running_seconds = (time.time() - start_time)
     running_time = str(datetime.timedelta(seconds=int(running_seconds)))
     lps = round((saved-last_done)/UPDATE_DELAY, 2)
-
     last_done = saved
 
-    sys.stdout.write( "\rDomains: %d\tSaved: %d\tFailed: %d\tThreads: %d\tDPS: %.1f\tTime: %s\tSQS: %d  " %
+    sys.stdout.write( "\rDomains: %d\tSaved: %d\tFailed: %d\tThreads: %d\tDPS: %.1f\tTime: %s\tSQS: %d " %
             (domains, saved, failed, nThreads, lps, running_time, sqsize) )
     sys.stdout.flush()
 
@@ -51,17 +56,22 @@ if __name__ == '__main__':
 
     try:
         while not done(enqueueThread, saveThread, workerThreads):
-            printStatus(enqueueThread.domains, saveThread.saved, worker_thread.getTotalFailures(workerThreads), nThreads, saveThread.queue.qsize())
-
+            printStatus(enqueueThread, saveThread, workerThreads)
             time.sleep(UPDATE_DELAY)
         saveThread.queue.join()
     except KeyboardInterrupt:
+        print "\n Saving..."
+        saveThread.go = False
+        while saveThread.active:
+            time.sleep(0.2)
         pass
     finally:
-        printStatus(enqueueThread.domains, saveThread.saved, worker_thread.getTotalFailures(workerThreads), nThreads, saveThread.queue.qsize())
-
+        running_seconds = (time.time() - start_time)
+        print "\nAverage DPS: "+str(round((saveThread.saved/running_seconds),2))
+        domS, mxS, ipS = worker_thread.getSkips(workerThreads)
+        print "Domains_Skipped: "+str(domS)+" \tMX_Skipped: "+str(mxS)+" \tIPs_Skipped: "+str(ipS)
         domF, excF, smtpF = worker_thread.getFailures(workerThreads)
-        print "\nDomF: "+str(domF)+"\tExcF: "+str(excF)+"\tsmtpF: "+str(smtpF)
+        print "Domain_Fails: "+str(domF)+" \tSMTP_Fails: "+str(smtpF)+" \tException_Fails: "+str(excF)
 
-    print "\nDone!"
+    print "Done!"
 

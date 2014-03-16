@@ -7,7 +7,7 @@ import database
 import traceback #for dEBUG
 import database
 
-MAX_QUEUE_SIZE = 10000
+MAX_QUEUE_SIZE = 1000
 
 def get_nameservers_from_file():
     names = []
@@ -26,6 +26,30 @@ def working(threads):
         if thread.active:
             return True
     return False
+
+def getSkips(threads):
+    ''' returns the total count of the skipped types'''
+    if not threads:
+        return 0, 0, 0
+    domain = 0
+    mx = 0
+    ip = 0
+    for thread in threads:
+        domain += thread.skip_domain
+        mx += thread.skip_mx
+        ip+= thread.skip_ip
+    return domain, mx, ip
+
+def getActiveThreads(threads):
+    ''' returns the number of threads doing real work'''
+    if not threads:
+        return 0
+    active = 0
+    for thread in threads:
+        if thread.active:
+            active += 1
+    return active
+
 
 def getFailures(threads):
     ''' returns the total count of the failure types'''
@@ -90,11 +114,14 @@ class Worker(threading.Thread):
         self.scanner = smtp_scanner.smtp_scanner()
         self.db = None
         self.check_db = check_db
+        self.skip_domain = 0
+        self.skip_mx = 0
+        self.skip_ip = 0
 
     def run(self):
         ''' main loop for worker thread'''
         if self.check_db:
-            self.db = database.Database()
+            self.db = database.Database(False)
 
         self.running = True
 
@@ -105,23 +132,28 @@ class Worker(threading.Thread):
                 self.active = True
 
                 if self.db and self.db.check_domain(domain):
+                    self.skip_domain += 1
+                    self.domain_queue.task_done()
                     continue
 
                 try:
                     mxList = self.mxdef.mx_lookup(domain, all_mx=True, all_ip=True)
                     if not mxList:
                         self.domain_failures +=1
+                        self.domain_queue.task_done()
                         continue
 
                     dom = database.DomObject(domain)
                     for mx in mxList.mxList():
                         pref = mxList.getPref(mx)
                         if self.db and self.db.check_mx_record(mx):
-                            dom.add(mx, pref, None) #TODO verify this
+                            dom.add(mx, pref, None)
+                            self.skip_mx += 1
                             continue
                         for ip in mxList.ipList(mx):
                             if self.db and self.db.check_server_record(ip):
-                                dom.add(mx, pref, smtp_scanner.smtp_server(ip)) #TODO verify this
+                                dom.add(mx, pref, smtp_scanner.smtp_server(ip))
+                                self.skip_ip += 1
                                 continue
                             serv = self.scanner.queryServer(ip)
                             if serv:
@@ -132,10 +164,12 @@ class Worker(threading.Thread):
 
 
                     #save something
+                    self.active = False
                     self.save_queue.put(dom)
                     self.work_done += 1
 
                 except Exception as e:
+                    self.active = False
                     self.exception_failures += 1
                     print "Exception on domain: "+domain
                     print e

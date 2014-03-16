@@ -34,7 +34,7 @@ class Enqueue(threading.Thread):
             if domainPattern.match(line):
                 self.queue.put(line)
                 self.domains += 1
-        
+ 
         self.fileh.close()
         self.running = False
         self.queue.join()
@@ -53,13 +53,14 @@ class Save(threading.Thread):
         self.saved = 0
         self.active = False
         self.db = None
+        self.go = True
 
     def run(self):
         ''' main entrypoint for thread'''
         self.db = database.Database()
         self.running = True
 
-        while True:
+        while self.go:
             self.active = False
             result = self.queue.get()
             if result:
@@ -69,6 +70,7 @@ class Save(threading.Thread):
 
             self.queue.task_done()
 
+        self.active = False
 
         self.done = True
         self.running = False

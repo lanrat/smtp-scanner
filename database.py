@@ -1,7 +1,9 @@
 import sqlite3 as lite
+import time
 
 DEBUG = False
 
+_ready = False
 
 class DomObject:
     def __init__(self, domain):
@@ -37,7 +39,7 @@ class Database:
             self.cur.execute("CREATE TABLE IF NOT EXISTS Domain_Mx(Id INTEGER \
                     PRIMARY KEY AUTOINCREMENT, Domain_id INT NOT NULL, Mx_id INT NOT NULL);")
             self.cur.execute("CREATE TABLE IF NOT EXISTS Server(Id INTEGER \
-                    PRIMARY KEY AUTOINCREMENT, Mx_id INT NOT NULL, IP TXT NOT NULL, ESMTP BIT, \
+                    PRIMARY KEY AUTOINCREMENT, IP TXT NOT NULL, ESMTP BIT, \
                     TLS BIT, SSL_Ciper_Name TXT, SSL_Cipher_Version TXT, \
                     SSL_Cipher_Bits INT, SSL_Verified BIT);")
             self.cur.execute("CREATE TABLE IF NOT EXISTS Mx_Server(Id INTEGER \
@@ -45,18 +47,27 @@ class Database:
             #create indexes
             self.cur.execute("CREATE INDEX IF NOT EXISTS Domains_name_index on Domains (Domain);")
             self.cur.execute("CREATE INDEX IF NOT EXISTS Mx_name_index on Mx (Domain);")
+            self.cur.execute("CREATE INDEX IF NOT EXISTS Server_ip_index on Server (ip);")
             self.cur.execute("CREATE INDEX IF NOT EXISTS Domains_Mx_domain_index on Domain_Mx (Domain_id);")
             self.cur.execute("CREATE INDEX IF NOT EXISTS Domains_Mx_mx_index on Domain_Mx (Mx_id);")
             self.cur.execute("CREATE INDEX IF NOT EXISTS Mx_server_mx_index on Mx_server (Mx_id);")
             self.cur.execute("CREATE INDEX IF NOT EXISTS Mx_server_domain_index on Mx_server (Server_id);")
             #commit changes
             self.con.commit()
+            global _ready
+            _ready = True
+        else:
+            while not _ready:
+                time.sleep(1)
 
     def __del__(self):
         """Cleanup"""
-        self.con.commit()
-        if self.con: 
-            self.con.close()
+        try:
+            self.con.commit()
+            if self.con: 
+                self.con.close()
+        except:
+            pass
     
     def add(self, dom):
         """Add record
@@ -79,7 +90,7 @@ class Database:
 
     def check_domain(self, domain):
         domain = domain.lower()
-        return self.cur.execute("SELECT * FROM Domains WHERE Domain = '%s';" \
+        return self.cur.execute("SELECT id FROM Domains WHERE Domain = '%s';" \
                 % domain).fetchone()
 
     def add_domain(self, domain):
@@ -155,8 +166,8 @@ class Database:
         else:
             new = True
             self.cur.execute("INSERT INTO Server VALUES" \
-                    "(NULL, %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s');" \
-                    % (mx_id, serv.ip, serv.esmtp, serv.tls, \
+                    "(NULL, '%s', '%s', '%s', '%s', '%s', '%s', '%s');" \
+                    % (serv.ip, serv.esmtp, serv.tls, \
                     serv.ssl_cipher_name, serv.ssl_cipher_version, \
                     serv.ssl_cipher_bits, serv.ssl_verified))
             serv_id = self.cur.lastrowid
