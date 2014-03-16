@@ -34,7 +34,7 @@ class Enqueue(threading.Thread):
             if domainPattern.match(line):
                 self.queue.put(line)
                 self.domains += 1
- 
+
         self.fileh.close()
         self.running = False
         self.queue.join()

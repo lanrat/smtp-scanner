@@ -66,6 +66,7 @@ if __name__ == '__main__':
             time.sleep(0.2)
         pass
     finally:
+        printStatus(enqueueThread, saveThread, workerThreads)
         running_seconds = (time.time() - start_time)
         print "\nAverage DPS: "+str(round((saveThread.saved/running_seconds),2))
         domS, mxS, ipS = worker_thread.getSkips(workerThreads)
@@ -75,6 +76,8 @@ if __name__ == '__main__':
         failed = worker_thread.getTotalFailures(workerThreads)
         saved = saveThread.saved
         total = (failed+saved)*1.0
+        if total < 1:
+            total = 1.0
         print "Fail Ratio: "+str(round((failed/total), 2))
 
     print "Done!"

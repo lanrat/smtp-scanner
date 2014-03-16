@@ -4,7 +4,7 @@ from Queue import Queue
 import queue_threads
 import smtp_scanner
 import database
-import traceback #for dEBUG
+import traceback #for DEBUG
 import database
 
 MAX_QUEUE_SIZE = 1000
