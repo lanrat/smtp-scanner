@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sqlite3 as lite
+import sys
 
 DEBUG = False
 
@@ -10,7 +11,7 @@ class Stats:
         print "\nExtracting statistics from database:"
 
         """Open the database"""
-        self.con = lite.connect('/scratch/test_run/data_large.db')
+        self.con = lite.connect(sys.argv[1])
         self.cur = self.con.cursor()
 
         if DEBUG:
