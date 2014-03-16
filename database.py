@@ -77,6 +77,11 @@ class Database:
                     self.add_server(mx_id, serv)
         self.con.commit()
 
+    def check_domain(self, domain):
+        domain = domain.lower()
+        return self.cur.execute("SELECT * FROM Domains WHERE Domain = '%s';" \
+                % domain).fetchone()
+
     def add_domain(self, domain):
         """Add domain record
         
@@ -86,8 +91,7 @@ class Database:
             id of new record
         """
         domain = domain.lower()
-        r = self.cur.execute("SELECT * FROM Domains WHERE Domain = '%s';" \
-                % domain).fetchone()
+        r = self.check_domain(domain)
         if r is not None:
             return -1
         self.cur.execute("INSERT INTO Domains(Domain) VALUES ('%s');" \
@@ -96,6 +100,7 @@ class Database:
 
 
     def check_mx_record(self, domain):
+        domain = str(domain).lower()
         return self.cur.execute("SELECT * FROM Mx WHERE Domain = '%s';" \
                 % domain).fetchone()
 
@@ -128,7 +133,7 @@ class Database:
 
     def check_server_record(self, ip):
         return self.cur.execute("SELECT * FROM Server WHERE ip = '%s';" \
-                % serv.ip).fetchone()
+                % ip).fetchone()
 
     def add_server(self, mx_id, serv):
         """Add Server record
@@ -145,7 +150,7 @@ class Database:
 
         new = False
         s = self.check_server_record(serv.ip)
-        if serv is not None:
+        if s is not None:
             serv_id = s[0]
         else:
             new = True

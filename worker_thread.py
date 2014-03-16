@@ -5,7 +5,7 @@ import queue_threads
 import smtp_scanner
 import database
 import traceback #for dEBUG
-
+import database
 
 MAX_QUEUE_SIZE = 10000
 
@@ -74,7 +74,7 @@ def start(domain_file, n=1):
 class Worker(threading.Thread):
     ''' this is the main worker threads that we will spawn multiples of to do all the work'''
 
-    def __init__(self, domain_queue, save_queue, nameservers):
+    def __init__(self, domain_queue, save_queue, nameservers, check_db=True):
         threading.Thread.__init__(self)
         self.daemon = True
         self.domain_queue = domain_queue
@@ -88,9 +88,13 @@ class Worker(threading.Thread):
         self.exception_failures = 0
         self.smtp_failures = 0
         self.scanner = smtp_scanner.smtp_scanner()
+        self.db = None
+        self.check_db = check_db
 
     def run(self):
         ''' main loop for worker thread'''
+        if self.check_db:
+            self.db = database.Database()
 
         self.running = True
 
@@ -100,6 +104,9 @@ class Worker(threading.Thread):
             if domain:
                 self.active = True
 
+                if self.db and self.db.check_domain(domain):
+                    continue
+
                 try:
                     mxList = self.mxdef.mx_lookup(domain, all_mx=True, all_ip=True)
                     if not mxList:
@@ -108,8 +115,12 @@ class Worker(threading.Thread):
 
                     dom = database.DomObject(domain)
                     for mx in mxList.mxList():
+                        if self.db and self.db.check_mx_record(mx):
+                            continue
                         pref = mxList.getPref(mx)
                         for ip in mxList.ipList(mx):
+                            if self.db and self.db.check_server_record(ip):
+                                continue
                             serv = self.scanner.queryServer(ip)
                             self.smtp_failures +=1
                             if serv:

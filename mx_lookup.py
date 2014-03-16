@@ -226,10 +226,10 @@ class MXLookup:
 
     def __del__(self):
         # save list of good nameservers
-        f = open("good_nameservers", "w")
+        '''f = open("good_nameservers", "w")
         for name in self.nameservers:
             f.write(name + '\n')
-        f.close()        
+        f.close()'''
 
 
 
