@@ -49,16 +49,19 @@ if __name__ == '__main__':
 
     time.sleep(0.6)
 
-    while not done(enqueueThread, saveThread, workerThreads):
+    try:
+        while not done(enqueueThread, saveThread, workerThreads):
+            printStatus(enqueueThread.domains, saveThread.saved, worker_thread.getTotalFailures(workerThreads), nThreads, saveThread.queue.qsize())
+
+            time.sleep(UPDATE_DELAY)
+        saveThread.queue.join()
+    except KeyboardInterrupt:
+        pass
+    finally:
         printStatus(enqueueThread.domains, saveThread.saved, worker_thread.getTotalFailures(workerThreads), nThreads, saveThread.queue.qsize())
-        
-        time.sleep(UPDATE_DELAY)
-    saveThread.queue.join()
-    printStatus(enqueueThread.domains, saveThread.saved, worker_thread.getTotalFailures(workerThreads), nThreads, saveThread.queue.qsize())
+
+        domF, excF, smtpF = worker_thread.getFailures(workerThreads)
+        print "\nDomF: "+str(domF)+"\tExcF: "+str(excF)+"\tsmtpF: "+str(smtpF)
 
     print "\nDone!"
-
-
-
-
 

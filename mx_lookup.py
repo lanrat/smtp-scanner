@@ -132,6 +132,8 @@ class MXLookup:
             except dns.resolver.NoAnswer:
                 return [dns.rdtypes.ANY.MX.MX(rdclass=1, rdtype=15, \
                                               exchange=domain, preference=-1)]
+        self.mx_round_robin()
+
         return None
 
     """
@@ -185,7 +187,11 @@ class MXLookup:
             self.set_nameservers(nameservers, res)
 
         # Get records and remove bad nameservers
-        sortRecords = self.get_mx_records(domain, res)
+        try:
+            sortRecords = self.get_mx_records(domain, res)
+        except:
+            #invalid domain name
+            return None
 
         if sortRecords is None:
             return None
@@ -220,10 +226,10 @@ class MXLookup:
 
     def __del__(self):
         # save list of good nameservers
-        f = open("good_nameservers", "w")
+        '''f = open("good_nameservers", "w")
         for name in self.nameservers:
             f.write(name + '\n')
-        f.close()        
+        f.close()'''
 
 
 
