@@ -72,6 +72,10 @@ if __name__ == '__main__':
         print "Domains_Skipped: "+str(domS)+" \tMX_Skipped: "+str(mxS)+" \tIPs_Skipped: "+str(ipS)
         domF, excF, smtpF = worker_thread.getFailures(workerThreads)
         print "Domain_Fails: "+str(domF)+" \tSMTP_Fails: "+str(smtpF)+" \tException_Fails: "+str(excF)
+        failed = worker_thread.getTotalFailures(workerThreads)
+        saved = saveThread.saved
+        total = (failed+saved)*1.0
+        print "Fail Ratio: "+str(round((failed/total), 2))
 
     print "Done!"
 
