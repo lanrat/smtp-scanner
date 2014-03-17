@@ -9,7 +9,7 @@ class Enqueue(threading.Thread):
     ''' thread to read domains from list and add them to a queue'''
 
     def __init__(self, queue, filename):
-        threading.Thread.__init__(self)
+        threading.Thread.__init__(self, name="enqueue")
         self.daemon = True
         self.queue = queue
         self.fileh = open(filename)
@@ -49,7 +49,7 @@ class Save(threading.Thread):
     '''thread to save all queries as they finish'''
 
     def __init__(self, queue):
-        threading.Thread.__init__(self)
+        threading.Thread.__init__(self, name="save")
         self.daemon = True
         self.queue = queue
         self.running = False
