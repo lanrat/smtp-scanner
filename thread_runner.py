@@ -33,7 +33,7 @@ def printStatus(enqueueThread, saveThread, workerThreads):
     lps = round((saved-last_done)/UPDATE_DELAY, 2)
     last_done = saved
 
-    sys.stdout.write( "\rTime: %s \tDomains: %d \tSaved: %d \tFailed: %d \tThreads: %d \tDPS: %.1f  " %
+    sys.stdout.write( "\rTime: %s  Domains: %d  Saved: %d  Failed: %d  Threads: %d  DPS: %.1f  " %
             (running_time, domains, saved, failed, nThreads, lps) )
     sys.stdout.flush()
 
