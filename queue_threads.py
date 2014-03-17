@@ -28,11 +28,15 @@ class Enqueue(threading.Thread):
 
         domainPattern = re.compile(domainRegEx)
 
+        rank = 0
+
         for line in self.fileh:
             line = line.strip()
+            rank += 1
 
             if domainPattern.match(line):
-                self.queue.put(line)
+                domain_set = (line, rank)
+                self.queue.put(domain_set)
                 self.domains += 1
 
         self.fileh.close()

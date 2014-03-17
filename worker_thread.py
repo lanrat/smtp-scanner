@@ -129,9 +129,11 @@ class Worker(threading.Thread):
 
         while True:
             self.active = False
-            domain = self.domain_queue.get()
-            if domain:
+            domain_set = self.domain_queue.get()
+            if domain_set and domain_set[0]:
                 self.active = True
+                domain = domain_set[0]
+                rank = domain_set[1]
 
                 if self.db and self.db.check_domain(domain):
                     self.skip_domain += 1
@@ -145,7 +147,7 @@ class Worker(threading.Thread):
                         self.domain_queue.task_done()
                         continue
 
-                    dom = database.DomObject(domain)
+                    dom = database.DomObject(domain, rank)
                     for mx in mxList.mxList():
                         pref = mxList.getPref(mx)
                         if self.db and self.db.check_mx_record(mx):

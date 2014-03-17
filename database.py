@@ -6,9 +6,10 @@ DEBUG = False
 _ready = False
 
 class DomObject:
-    def __init__(self, domain):
+    def __init__(self, domain, rank=None):
         domain = domain.lower()
         self.domain = domain
+        self.rank = rank
         self.mx = dict()
 
     def add(self, mxk, perf, serv):
@@ -33,7 +34,7 @@ class Database:
         if create:
             # Create initial tables
             self.cur.execute("CREATE TABLE IF NOT EXISTS Domains(Id INTEGER \
-                    PRIMARY KEY AUTOINCREMENT, Domain TXT NOT NULL UNIQUE);")
+                    PRIMARY KEY AUTOINCREMENT, Domain TXT NOT NULL UNIQUE, rank int);")
             self.cur.execute("CREATE TABLE IF NOT EXISTS Mx(Id INTEGER PRIMARY \
                     KEY AUTOINCREMENT, Domain TXT NOT NULL UNIQUE, Priority INT);")
             self.cur.execute("CREATE TABLE IF NOT EXISTS Domain_Mx(Id INTEGER \
@@ -68,17 +69,17 @@ class Database:
                 self.con.close()
         except:
             pass
-    
+ 
     def add(self, dom):
         """Add record
-        
+
         Paramaters:
             dom -- object containing domain, mx list, and server lists
         """
 
         if dom.mx is None:
             return 
-        dom_id = self.add_domain(dom.domain)
+        dom_id = self.add_domain(dom.domain, dom.rank)
         if dom_id == -1:
             return
         for __x, __y in dom.mx.iteritems():
@@ -93,11 +94,12 @@ class Database:
         return self.cur.execute("SELECT id FROM Domains WHERE Domain = '%s';" \
                 % domain).fetchone()
 
-    def add_domain(self, domain):
+    def add_domain(self, domain, rank=None):
         """Add domain record
-        
+
         Paramaters:
             domain -- string of domain to add
+            rank -- the  domains ranking
         Return:
             id of new record
         """
@@ -105,8 +107,8 @@ class Database:
         r = self.check_domain(domain)
         if r is not None:
             return -1
-        self.cur.execute("INSERT INTO Domains(Domain) VALUES ('%s');" \
-                % domain)
+        self.cur.execute("INSERT INTO Domains(Domain, rank) VALUES ('%s', %d);" \
+                % (domain, rank))
         return self.cur.lastrowid
 
 
@@ -117,7 +119,7 @@ class Database:
 
     def add_mx(self, domain_id, domain, priority):
         """Add MX record
-        
+
         Paramaters:
             domain_id -- id of domain record
             domain -- string of domain name
@@ -148,7 +150,7 @@ class Database:
 
     def add_server(self, mx_id, serv):
         """Add Server record
-        
+
         Paramaters:
             mx_id -- id of MX record
             serv -- smtp_server object
