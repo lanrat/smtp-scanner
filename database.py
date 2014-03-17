@@ -47,6 +47,7 @@ class Database:
                     PRIMARY KEY AUTOINCREMENT, Mx_id INT NOT NULL, Server_id INT NOT NULL);")
             #create indexes
             self.cur.execute("CREATE INDEX IF NOT EXISTS Domains_name_index on Domains (Domain);")
+            self.cur.execute("CREATE INDEX IF NOT EXISTS Domains_rank_index on Domains (rank);")
             self.cur.execute("CREATE INDEX IF NOT EXISTS Mx_name_index on Mx (Domain);")
             self.cur.execute("CREATE INDEX IF NOT EXISTS Server_ip_index on Server (ip);")
             self.cur.execute("CREATE INDEX IF NOT EXISTS Domains_Mx_domain_index on Domain_Mx (Domain_id);")
