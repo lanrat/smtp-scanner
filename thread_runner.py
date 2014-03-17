@@ -26,7 +26,6 @@ def printStatus(enqueueThread, saveThread, workerThreads):
     domains = enqueueThread.domains
     saved = saveThread.saved
     nThreads = worker_thread.getActiveThreads(workerThreads)
-    sqsize = saveThread.queue.qsize()
     failed = worker_thread.getTotalFailures(workerThreads)
 
     running_seconds = (time.time() - start_time)
@@ -34,23 +33,22 @@ def printStatus(enqueueThread, saveThread, workerThreads):
     lps = round((saved-last_done)/UPDATE_DELAY, 2)
     last_done = saved
 
-    sys.stdout.write( "\rDomains: %d\tSaved: %d\tFailed: %d\tThreads: %d\tDPS: %.1f\tTime: %s\tSQS: %d " %
-            (domains, saved, failed, nThreads, lps, running_time, sqsize) )
+    sys.stdout.write( "\rTime: %s \tDomains: %d \tSaved: %d \tFailed: %d \tThreads: %d \tDPS: %.1f  " %
+            (running_time, domains, saved, failed, nThreads, lps) )
     sys.stdout.flush()
 
 
 if __name__ == '__main__':
     if len(sys.argv) < 3 or not sys.argv[2].isdigit():
-        print "Usage: "+sys.argv[0]+" domain_file number_of_threads"
+        print "Usage: "+sys.argv[0]+" domain_list number_of_threads"
         sys.exit()
 
-    n = int(sys.argv[2])
+    nt = int(sys.argv[2])
     domain_file = sys.argv[1]
 
     start_time = time.time()
 
-    enqueueThread, saveThread, workerThreads, = worker_thread.start(domain_file, n)
-    nThreads = len(workerThreads)
+    enqueueThread, saveThread, workerThreads, = worker_thread.start(domain_file, nt)
 
     time.sleep(0.6)
 
