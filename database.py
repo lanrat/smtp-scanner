@@ -58,7 +58,7 @@ class Database:
                                                             SSL_Cipher_Bits INT, \
                                                             SSL_Verified BIT \
                                                         );")
-            self.cur.execute("CREATE TABLE IF NOT EXISTS mx_server( \
+            self.cur.execute("CREATE TABLE IF NOT EXISTS mx_servers( \
                                                             id INTEGER PRIMARY KEY AUTOINCREMENT, \
                                                             mx_id INT NOT NULL, \
                                                             server_id INT NOT NULL \
@@ -69,7 +69,7 @@ class Database:
             self.cur.execute("CREATE INDEX IF NOT EXISTS mx_name_index on mx (domain);")
             self.cur.execute("CREATE INDEX IF NOT EXISTS server_ip_index on servers (ip);")
             self.cur.execute("CREATE INDEX IF NOT EXISTS domains_Mx_domain_index on domain_mx (domain_id);")
-            self.cur.execute("CREATE INDEX IF NOT EXISTS domains_Mx_mx_index on domain_Mx (mx_id);")
+            self.cur.execute("CREATE INDEX IF NOT EXISTS domains_Mx_mx_index on domains_Mx (mx_id);")
             self.cur.execute("CREATE INDEX IF NOT EXISTS mx_server_mx_index on mx_servers (mx_id);")
             self.cur.execute("CREATE INDEX IF NOT EXISTS mx_server_domain_index on mx_servers (server_id);")
             #commit changes
