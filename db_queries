@@ -1,4 +1,4 @@
-select sum(num) from (select count(domains.domain), mx.domain, count(domain_mx.mx_id) num from Domain_mx, domains, mx where domain_mx.domain_id = domains.id and domain_mx.mx_id = mx.id and mx.domain like "%hotmail%" group by domain_mx.mx_id);
+select sum(num) from (select count(domains.domain), mx.domain, count(domains_mx.mx_id) num from Domain_mx, domains, mx where domains_mx.domain_id = domains.id and domains_mx.mx_id = mx.id and mx.domain like "%hotmail%" group by domains_mx.mx_id);
 
 
 
@@ -19,18 +19,18 @@ select count(id) num, ssl_verified from servers group by ssl_verified order by n
 
 
 popular mail servers: WARNING: SLOW
-select count(domain_mx.mx_id) num, mx.domain from mx, domain_mx where mx.id = domain_mx.mx_id group by domain_mx.mx_id order by num desc;
+select count(domains_mx.mx_id) num, mx.domain from mx, domains_mx where mx.id = domains_mx.mx_id group by domains_mx.mx_id order by num desc;
 
 
 popular mail servers: (same servers multiple mx reccords pointing to 1 ip)
-select count(mx_server.server_id) num, servers.ip from servers, mx_server where servers.id = mx_server.server_id group by mx_server.server_id order by num desc;
+select count(mx_servers.server_id) num, servers.ip from servers, mx_servers where servers.id = mx_servers.server_id group by mx_servers.server_id order by num desc;
 alternate version that includes name of 1 mx server:
-select count(mx_server.server_id) num, servers.ip , mx.domain from mx, servers, mx_server where servers.id = mx_server.server_id and mx.id = mx_server.mx_id group by mx_server.server_id order by num desc;
+select count(mx_servers.server_id) num, servers.ip , mx.domain from mx, servers, mx_servers where servers.id = mx_servers.server_id and mx.id = mx_servers.mx_id group by mx_servers.server_id order by num desc;
 
 
 all domains hosted by google:
-select domains.domain from domains, domain_mx, mx where domains.id = domain_mx.domain_id and domain_mx.mx_id = mx.id and mx.domain like '%google%' group by domains.domain;
+select domains.domain from domains, domains_mx, mx where domains.id = domains_mx.domain_id and domains_mx.mx_id = mx.id and mx.domain like '%google%' group by domains.domain;
 count:
-select count(*) from (select domains.domain from domains, domain_mx, mx where domains.id = domain_mx.domain_id and domain_mx.mx_id = mx.id and mx.domain like '%google%' group by domains.domain);
+select count(*) from (select domains.domain from domains, domains_mx, mx where domains.id = domains_mx.domain_id and domains_mx.mx_id = mx.id and mx.domain like '%google%' group by domains.domain);
 
 
