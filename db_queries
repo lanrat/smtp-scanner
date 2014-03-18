@@ -3,29 +3,29 @@ select sum(num) from (select count(domains.domain), mx.domain, count(domain_mx.m
 
 
 count number of servers that support various encryption ciphers
-select count(id) num, SSL_Ciper_Name from server group by SSL_Ciper_Name order by num desc;
+select count(id) num, SSL_Cipher_Name from servers group by SSL_Cipher_Name order by num desc;
 bits:
-select count(id) num, SSL_Cipher_Bits from server group by SSL_Cipher_Bits order by num desc;
+select count(id) num, SSL_Cipher_Bits from servers group by SSL_Cipher_Bits order by num desc;
 
 
 number of servers that support esmtp:
-select count(id) num, esmtp from server group by esmtp order by num desc;
+select count(id) num, esmtp from servers group by esmtp order by num desc;
 tls:
-select count(id) num, tls from server group by tls order by num desc;
+select count(id) num, tls from servers group by tls order by num desc;
 
 
 is ssl verified:
-select count(id) num, ssl_verified from server group by ssl_verified order by num desc;
+select count(id) num, ssl_verified from servers group by ssl_verified order by num desc;
 
 
 popular mail servers: WARNING: SLOW
 select count(domain_mx.mx_id) num, mx.domain from mx, domain_mx where mx.id = domain_mx.mx_id group by domain_mx.mx_id order by num desc;
 
 
-popular mail servers: (same server multiple mx reccords pointing to 1 ip)
-select count(mx_server.server_id) num, server.ip from server, mx_server where server.id = mx_server.server_id group by mx_server.server_id order by num desc;
+popular mail servers: (same servers multiple mx reccords pointing to 1 ip)
+select count(mx_server.server_id) num, servers.ip from servers, mx_server where servers.id = mx_server.server_id group by mx_server.server_id order by num desc;
 alternate version that includes name of 1 mx server:
-select count(mx_server.server_id) num, server.ip , mx.domain from mx, server, mx_server where server.id = mx_server.server_id and mx.id = mx_server.mx_id group by mx_server.server_id order by num desc;
+select count(mx_server.server_id) num, servers.ip , mx.domain from mx, servers, mx_server where servers.id = mx_server.server_id and mx.id = mx_server.mx_id group by mx_server.server_id order by num desc;
 
 
 all domains hosted by google:
