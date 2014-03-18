@@ -33,27 +33,45 @@ class Database:
 
         if create:
             # Create initial tables
-            self.cur.execute("CREATE TABLE IF NOT EXISTS Domains(Id INTEGER \
-                    PRIMARY KEY AUTOINCREMENT, Domain TXT NOT NULL UNIQUE, rank int);")
-            self.cur.execute("CREATE TABLE IF NOT EXISTS Mx(Id INTEGER PRIMARY \
-                    KEY AUTOINCREMENT, Domain TXT NOT NULL UNIQUE, Priority INT);")
-            self.cur.execute("CREATE TABLE IF NOT EXISTS Domain_Mx(Id INTEGER \
-                    PRIMARY KEY AUTOINCREMENT, Domain_id INT NOT NULL, Mx_id INT NOT NULL);")
-            self.cur.execute("CREATE TABLE IF NOT EXISTS Server(Id INTEGER \
-                    PRIMARY KEY AUTOINCREMENT, IP TXT NOT NULL, ESMTP BIT, \
-                    TLS BIT, SSL_Ciper_Name TXT, SSL_Cipher_Version TXT, \
-                    SSL_Cipher_Bits INT, SSL_Verified BIT);")
-            self.cur.execute("CREATE TABLE IF NOT EXISTS Mx_Server(Id INTEGER \
-                    PRIMARY KEY AUTOINCREMENT, Mx_id INT NOT NULL, Server_id INT NOT NULL);")
+            self.cur.execute("CREATE TABLE IF NOT EXISTS domains( \
+                                                            id INTEGER PRIMARY KEY AUTOINCREMENT, \
+                                                            domain TXT NOT NULL UNIQUE, \
+                                                            rank int \
+                                                        );")
+            self.cur.execute("CREATE TABLE IF NOT EXISTS mx( \
+                                                            id INTEGER PRIMARY KEY AUTOINCREMENT, \
+                                                            domain TXT NOT NULL UNIQUE, \
+                                                            priority INT \
+                                                        );")
+            self.cur.execute("CREATE TABLE IF NOT EXISTS domains_mx( \
+                                                            id INTEGER PRIMARY KEY AUTOINCREMENT, \
+                                                            domain_id INT NOT NULL, \
+                                                            mx_id INT NOT NULL \
+                                                        );")
+            self.cur.execute("CREATE TABLE IF NOT EXISTS servers( \
+                                                            id INTEGER PRIMARY KEY AUTOINCREMENT, \
+                                                            ip TXT NOT NULL, \
+                                                            ESMTP BIT, \
+                                                            TLS BIT, \
+                                                            SSL_Cipher_Name TXT, \
+                                                            SSL_Cipher_Version TXT, \
+                                                            SSL_Cipher_Bits INT, \
+                                                            SSL_Verified BIT \
+                                                        );")
+            self.cur.execute("CREATE TABLE IF NOT EXISTS mx_server( \
+                                                            id INTEGER PRIMARY KEY AUTOINCREMENT, \
+                                                            mx_id INT NOT NULL, \
+                                                            server_id INT NOT NULL \
+                                                        );")
             #create indexes
-            self.cur.execute("CREATE INDEX IF NOT EXISTS Domains_name_index on Domains (Domain);")
-            self.cur.execute("CREATE INDEX IF NOT EXISTS Domains_rank_index on Domains (rank);")
-            self.cur.execute("CREATE INDEX IF NOT EXISTS Mx_name_index on Mx (Domain);")
-            self.cur.execute("CREATE INDEX IF NOT EXISTS Server_ip_index on Server (ip);")
-            self.cur.execute("CREATE INDEX IF NOT EXISTS Domains_Mx_domain_index on Domain_Mx (Domain_id);")
-            self.cur.execute("CREATE INDEX IF NOT EXISTS Domains_Mx_mx_index on Domain_Mx (Mx_id);")
-            self.cur.execute("CREATE INDEX IF NOT EXISTS Mx_server_mx_index on Mx_server (Mx_id);")
-            self.cur.execute("CREATE INDEX IF NOT EXISTS Mx_server_domain_index on Mx_server (Server_id);")
+            self.cur.execute("CREATE INDEX IF NOT EXISTS domains_name_index on domains (domain);")
+            self.cur.execute("CREATE INDEX IF NOT EXISTS domains_rank_index on domains (rank);")
+            self.cur.execute("CREATE INDEX IF NOT EXISTS mx_name_index on mx (domain);")
+            self.cur.execute("CREATE INDEX IF NOT EXISTS server_ip_index on servers (ip);")
+            self.cur.execute("CREATE INDEX IF NOT EXISTS domains_Mx_domain_index on domain_mx (domain_id);")
+            self.cur.execute("CREATE INDEX IF NOT EXISTS domains_Mx_mx_index on domain_Mx (mx_id);")
+            self.cur.execute("CREATE INDEX IF NOT EXISTS mx_server_mx_index on mx_servers (mx_id);")
+            self.cur.execute("CREATE INDEX IF NOT EXISTS mx_server_domain_index on mx_servers (server_id);")
             #commit changes
             self.con.commit()
             global _ready
@@ -92,7 +110,7 @@ class Database:
 
     def check_domain(self, domain):
         domain = domain.lower()
-        return self.cur.execute("SELECT id FROM Domains WHERE Domain = '%s';" \
+        return self.cur.execute("SELECT id FROM domains WHERE domain = '%s';" \
                 % domain).fetchone()
 
     def add_domain(self, domain, rank=None):
@@ -108,14 +126,14 @@ class Database:
         r = self.check_domain(domain)
         if r is not None:
             return -1
-        self.cur.execute("INSERT INTO Domains(Domain, rank) VALUES ('%s', %d);" \
+        self.cur.execute("INSERT INTO domains(domain, rank) VALUES ('%s', %d);" \
                 % (domain, rank))
         return self.cur.lastrowid
 
 
     def check_mx_record(self, domain):
         domain = str(domain).lower()
-        return self.cur.execute("SELECT * FROM Mx WHERE Domain = '%s';" \
+        return self.cur.execute("SELECT * FROM mx WHERE domain = '%s';" \
                 % domain).fetchone()
 
     def add_mx(self, domain_id, domain, priority):
@@ -136,17 +154,17 @@ class Database:
             mx_id = mx[0]
         else:
             new = True
-            self.cur.execute("INSERT INTO Mx VALUES" \
+            self.cur.execute("INSERT INTO mx VALUES" \
                     "(NULL, '%s', %d);" % (domain, priority))
             mx_id = self.cur.lastrowid
 
-        self.cur.execute("INSERT INTO Domain_Mx VALUES (NULL, %d, %d);" \
+        self.cur.execute("INSERT INTO domains_mx VALUES (NULL, %d, %d);" \
                 % (domain_id, mx_id))
 
         return mx_id, new
 
     def check_server_record(self, ip):
-        return self.cur.execute("SELECT * FROM Server WHERE ip = '%s';" \
+        return self.cur.execute("SELECT * FROM servers WHERE ip = '%s';" \
                 % ip).fetchone()
 
     def add_server(self, mx_id, serv):
@@ -168,14 +186,14 @@ class Database:
             serv_id = s[0]
         else:
             new = True
-            self.cur.execute("INSERT INTO Server VALUES" \
+            self.cur.execute("INSERT INTO servers VALUES" \
                     "(NULL, '%s', '%s', '%s', '%s', '%s', '%s', '%s');" \
                     % (serv.ip, serv.esmtp, serv.tls, \
                     serv.ssl_cipher_name, serv.ssl_cipher_version, \
                     serv.ssl_cipher_bits, serv.ssl_verified))
             serv_id = self.cur.lastrowid
 
-        self.cur.execute("INSERT INTO Mx_Server VALUES (NULL, %d, %d);" \
+        self.cur.execute("INSERT INTO mx_servers VALUES (NULL, %d, %d);" \
                 % (mx_id, serv_id))
 
         return serv_id

@@ -19,7 +19,7 @@ class Stats:
             data = self.cur.fetchone()
             print "SQlite version %s" % data
 
-        self.cur.execute("select count(*) from Server;")
+        self.cur.execute("select count(*) from Servers;")
         self.num_servers = int(self.cur.fetchone()[0])
         print "Collected data on %d servers.\n" % self.num_servers
     
@@ -30,7 +30,7 @@ class Stats:
             self.con.close()
     
     def get_esmtp(self):
-        self.cur.execute("select count(*) from Server where esmtp = 'True';")
+        self.cur.execute("select count(*) from Servers where esmtp = 'True';")
         num_servers_esmtp = int(self.cur.fetchone()[0])
 
         print "%d servers support esmtp." % num_servers_esmtp
@@ -39,7 +39,7 @@ class Stats:
         print
 
     def get_tls(self):
-        self.cur.execute("select count(*) from Server where tls = 'True';")
+        self.cur.execute("select count(*) from Servers where tls = 'True';")
         num_servers_tls = int(self.cur.fetchone()[0])
 
         print "%d servers support tls." % num_servers_tls
@@ -48,7 +48,7 @@ class Stats:
         print
 
     def get_ssl_cert(self):
-        self.cur.execute("select count(*) from Server where ssl_verified = 'True';")
+        self.cur.execute("select count(*) from Servers where ssl_verified = 'True';")
         num_servers_verified = int(self.cur.fetchone()[0])
 
         print "%d servers have valid certificates." % num_servers_verified
