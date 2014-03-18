@@ -34,6 +34,3 @@ count:
 select count(*) from (select domains.domain from domains, domain_mx, mx where domains.id = domain_mx.domain_id and domain_mx.mx_id = mx.id and mx.domain like '%google%' group by domains.domain);
 
 
-TODO: we should add rakings to the domains table to allos us to create graphs of top x for a varying x stats
-
-
