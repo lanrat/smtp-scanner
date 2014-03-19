@@ -77,7 +77,31 @@ class Stats:
         print "%f%% servers don't have valid certificates." % (float(self.num_servers - \
                 num_servers_verified) / float(self.num_servers) * 100)
 
+    def get_top_ten(self):
+        topten = ['hotmail.com', 'gmail.com', 'yahoo.com', 'aol.com', 
+                'comcast.com', 'mail.ru', 'web.de', 'qq.com', 'gmx.net',
+                'naver.com']
+        
+        print "Domain\tTLS\tVerified\t"
+        results = []
+        for domain in topten:
+            self.cur.execute("select id from domains where domain = '%s';" % domain)
+            dom_id = self.cur.fetchone()[0]
+            self.cur.execute("select mx_id from domains_mx where domain_id = %s;" % dom_id)
+            mx_id = self.cur.fetchone()[0]
+            self.cur.execute("select server_id from mx_servers where mx_id = %s;" % mx_id)
+            serv_id = self.cur.fetchone()[0]
 
+            self.cur.execute("select tls from servers where id = %s;" % serv_id)
+            tls = self.cur.fetchone()[0]
+            self.cur.execute("select ssl_verified from servers where id = %s;" % serv_id)
+            verified = self.cur.fetchone()[0]
+            results.append([domain, tls, verified])
+
+            #num_servers_tls = int(self.cur.fetchone()[0])
+            #self.cur.execute("select count(*) from Servers where ssl_verified = 'True';")
+
+        pprint.pprint(results)
 
     def top_ip_domain(self, limit=20):
         self.cur.execute("select servers.ip, count(domains_mx.domain_id) num from mx_servers, servers, mx, domains_mx where domains_mx.mx_id = mx.id and mx.id = mx_servers.mx_id and servers.id = mx_servers.server_id group by servers.id order by num desc limit %d;" % (limit));
@@ -100,7 +124,6 @@ class Stats:
             print_ld(r, first)
             first = False
         print ""
-
 
     def get_domain_stats(self,domain):
         self.cur.execute("select servers.esmtp, servers.tls, servers.ssl_verified, servers.ssl_ciper_name, servers.ssl_cipher_bits from servers, mx, mx_servers, domains, domains_mx where domains_mx.domain_id = domains.id and domains_mx.mx_id = mx.id and mx_servers.server_id = servers.id and mx_servers.mx_id = mx.id and domains.domain = '%s' group by servers.esmtp, servers.tls, servers.ssl_ciper_name, servers.ssl_cipher_bits, servers.ssl_verified;" % (domain))
@@ -154,7 +177,6 @@ class Stats:
             print s
         print ""
 
-
     def build_tls_rank_graph(self, limit, step=10):
         print "=== rank tls ==="
         i = step
@@ -187,9 +209,6 @@ class Stats:
             print s
         print ""
 
-
-
-
     def build_tls_rank_graph(self, limit, step=10):
         print "=== rank tls ==="
         i = step
@@ -221,8 +240,6 @@ class Stats:
                 s +='\t'
             print s
         print ""
-
-
 
     def build_tls_rank_graph(self, limit, step=10):
         print "=== rank tls ==="
@@ -345,3 +362,4 @@ stats.build_verified_rank_graph(1000000,20000)
 
 stats.build_cipher_rank_graph(10000,100)
 
+#stats.get_top_ten()
