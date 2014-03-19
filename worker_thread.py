@@ -101,7 +101,7 @@ class Worker(threading.Thread):
     ''' this is the main worker threads that we will spawn multiples of to do all the work'''
 
     def __init__(self, domain_queue, save_queue, nameservers, check_db=True):
-        threading.Thread.__init__(self)
+        threading.Thread.__init__(self, name="worker")
         self.daemon = True
         self.domain_queue = domain_queue
         self.save_queue = save_queue

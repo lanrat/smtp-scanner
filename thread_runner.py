@@ -10,6 +10,13 @@ last_done = 0
 
 UPDATE_DELAY = 3.0
 
+def set_proc_name(newname):
+    try:
+        import setproctitle
+        setproctitle.setproctitle(newname)
+    except:
+        pass
+
 def done(enqueueThread, saveThread, workerThreads):
     if not enqueueThread.done:
         return False
@@ -33,12 +40,13 @@ def printStatus(enqueueThread, saveThread, workerThreads):
     lps = round((saved-last_done)/UPDATE_DELAY, 2)
     last_done = saved
 
-    sys.stdout.write( "\rTime: %s \tDomains: %d \tSaved: %d \tFailed: %d \tThreads: %d \tDPS: %.1f  " %
+    sys.stdout.write( "\rTime: %s  Domains: %d  Saved: %d  Failed: %d  Threads: %d  DPS: %.1f  " %
             (running_time, domains, saved, failed, nThreads, lps) )
     sys.stdout.flush()
 
 
 if __name__ == '__main__':
+    set_proc_name("smtp-scanner")
     if len(sys.argv) < 3 or not sys.argv[2].isdigit():
         print "Usage: "+sys.argv[0]+" domain_list number_of_threads"
         sys.exit()
