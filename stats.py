@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sqlite3 as lite
 import sys
+import pprint
 
 DEBUG = False
 
@@ -56,9 +57,41 @@ class Stats:
                 num_servers_verified) / float(self.num_servers) * 100)
         print
 
+    def get_top_ten(self):
+        topten = ['hotmail.com', 'gmail.com', 'yahoo.com', 'aol.com', 
+                'comcast.com', 'mail.ru', 'web.de', 'qq.com', 'gmx.net',
+                'naver.com']
+        
+        print "Domain\tTLS\tVerified\t"
+        results = []
+        for domain in topten:
+            self.cur.execute("select id from domains where domain = '%s';" % domain)
+            dom_id = self.cur.fetchone()[0]
+            self.cur.execute("select mx_id from domains_mx where domain_id = %s;" % dom_id)
+            mx_id = self.cur.fetchone()[0]
+            self.cur.execute("select server_id from mx_servers where mx_id = %s;" % mx_id)
+            serv_id = self.cur.fetchone()[0]
+
+            self.cur.execute("select tls from servers where id = %s;" % serv_id)
+            tls = self.cur.fetchone()[0]
+            self.cur.execute("select ssl_verified from servers where id = %s;" % serv_id)
+            verified = self.cur.fetchone()[0]
+            results.append([domain, tls, verified])
+
+            #num_servers_tls = int(self.cur.fetchone()[0])
+            #self.cur.execute("select count(*) from Servers where ssl_verified = 'True';")
+
+        pprint.pprint(results)
+            
+
+
+
 
 
 stats = Stats()
+'''
 stats.get_esmtp()
 stats.get_tls()
 stats.get_ssl_cert()
+'''
+stats.get_top_ten()
