@@ -151,7 +151,7 @@ class Stats:
         return self.cur.fetchall()
 
     def build_cipher_rank_graph(self, limit, step=10):
-        print "=== rank cipher ==="
+        print "=== rank cipher %d ===" % (limit)
         i = step
         l = list()
         while i <= limit:
@@ -183,7 +183,7 @@ class Stats:
         print ""
 
     def build_tls_rank_graph(self, limit, step=10):
-        print "=== rank tls ==="
+        print "=== rank tls %d ===" % (limit)
         i = step
         l = list()
         while i <= limit:
@@ -215,7 +215,7 @@ class Stats:
         print ""
 
     def build_esmtp_rank_graph(self, limit, step=10):
-        print "=== rank esmtp ==="
+        print "=== rank esmtp %d ===" % (limit)
         i = step
         l = list()
         while i <= limit:
@@ -247,7 +247,7 @@ class Stats:
         print ""
 
     def build_verified_rank_graph(self, limit, step=10):
-        print "=== rank verified ssl ==="
+        print "=== rank verified ssl %d ===" % (limit)
         i = step
         l = list()
         while i <= limit:
