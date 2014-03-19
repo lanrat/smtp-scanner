@@ -21,13 +21,14 @@ def print_ld(r,head=True):
 class Stats:
     """Extract and format useful statistics"""
 
-    def __init__(self, filename):
+    def __init__(self, filename, db2='/scratch/results/email_counts.db'):
         print "\nExtracting statistics from database:"
 
         """Open the database"""
         self.con = lite.connect(filename)
         self.con.row_factory = self.dict_factory
         self.cur = self.con.cursor()
+        self.cur.execute("attach database '%s' as 'email_counts';" % db2)
 
         if DEBUG:
             self.cur.execute('SELECT SQLITE_VERSION()')
@@ -133,6 +134,10 @@ class Stats:
         self.cur.execute("select tls, count(tls) num from (select servers.tls tls from domains join domains_mx on domains.id = domains_mx.domain_id join mx_servers on mx_servers.mx_id = domains_mx.mx_id join servers on servers.id = mx_servers.server_id where domains.rank <= %d group by domains_mx.domain_id order by domains.rank) group by tls order by num desc;" % (rank))
         return self.cur.fetchall()
 
+    def get_users_stats_tls(self,users=100):
+        self.cur.execute("select tls, count(tls) num from (select servers.tls tls from domains join domains_mx on domains.id = domains_mx.domain_id join mx_servers on mx_servers.mx_id = domains_mx.mx_id join servers on servers.id = mx_servers.server_id where domains.rank <= %d group by domains_mx.domain_id order by domains.rank) group by tls order by num desc;" % (rank))
+        return self.cur.fetchall()
+
     def get_rank_stats_esmtp(self,rank=10):
         self.cur.execute("select esmtp, count(esmtp) num from (select servers.esmtp esmtp from domains join domains_mx on domains.id = domains_mx.domain_id join mx_servers on mx_servers.mx_id = domains_mx.mx_id join servers on servers.id = mx_servers.server_id where domains.rank <= %d group by domains_mx.domain_id order by domains.rank) group by esmtp order by num desc;" % (rank))
         return self.cur.fetchall()
@@ -172,70 +177,6 @@ class Stats:
             for i in l:
                 for d in i:
                     if d['cipher'] == op:
-                        s += str(d['num'])
-                s +='\t'
-            print s
-        print ""
-
-    def build_tls_rank_graph(self, limit, step=10):
-        print "=== rank tls ==="
-        i = step
-        l = list()
-        while i <= limit:
-            l.append(self.get_rank_stats_tls(i))
-            i +=step
-        if len(l) < 1:
-            return
-        options = list()
-        for i in l:
-            for r in i:
-                if r['tls'] not in options:
-                    options.append(r['tls'])
-        options.sort()
-        '''print header'''
-        j = step
-        s = "RANK\t"
-        while j <= limit:
-            s += str(j)+'\t'
-            j += step
-        print s
-        for op in options:
-            s = str(op)+'\t'
-            for i in l:
-                for d in i:
-                    if d['tls'] == op:
-                        s += str(d['num'])
-                s +='\t'
-            print s
-        print ""
-
-    def build_tls_rank_graph(self, limit, step=10):
-        print "=== rank tls ==="
-        i = step
-        l = list()
-        while i <= limit:
-            l.append(self.get_rank_stats_tls(i))
-            i +=step
-        if len(l) < 1:
-            return
-        options = list()
-        for i in l:
-            for r in i:
-                if r['tls'] not in options:
-                    options.append(r['tls'])
-        options.sort()
-        '''print header'''
-        j = step
-        s = "RANK\t"
-        while j <= limit:
-            s += str(j)+'\t'
-            j += step
-        print s
-        for op in options:
-            s = str(op)+'\t'
-            for i in l:
-                for d in i:
-                    if d['tls'] == op:
                         s += str(d['num'])
                 s +='\t'
             print s
@@ -344,22 +285,22 @@ stats.get_tls()
 stats.get_ssl_cert()
 
 #print "=== top IP ==="
-stats.top_ip_domain(50)
+#stats.top_ip_domain(50)
 
 #print "=== top MX ==="
-stats.top_mx()
+#stats.top_mx()
 
-stats.print_top_domain_info(20)
+#stats.print_top_domain_info(20)
 
 #stats.build_esmtp_rank_graph(100000,2000)
 
-stats.build_tls_rank_graph(100000,2000)
-stats.build_verified_rank_graph(100000,2000)
+#stats.build_tls_rank_graph(100000,2000)
+#stats.build_verified_rank_graph(100000,2000)
 
 
-stats.build_tls_rank_graph(1000000,20000)
-stats.build_verified_rank_graph(1000000,20000)
+#stats.build_tls_rank_graph(1000000,20000)
+#stats.build_verified_rank_graph(1000000,20000)
 
-stats.build_cipher_rank_graph(10000,100)
+#stats.build_cipher_rank_graph(10000,100)
 
 #stats.get_top_ten()
