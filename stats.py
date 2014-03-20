@@ -473,10 +473,10 @@ stats.build_esmtp_user_graph(1, 10)
 stats.build_verified_user_graph(1, 10)
 stats.build_cipher_user_graph(1, 10)
 
-#print "=== top IP ==="
+print "=== top IP ==="
 stats.top_ip_domain(50)
 
-#print "=== top MX ==="
+print "=== top MX ==="
 stats.top_mx()
 
 stats.print_top_domain_info(20)
