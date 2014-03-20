@@ -451,15 +451,27 @@ class Stats:
 
 
 stats = Stats(sys.argv[1])
-stats.get_esmtp()
-stats.get_tls()
-stats.get_ssl_cert()
+#stats.get_esmtp()
+#stats.get_tls()
+#stats.get_ssl_cert()
 
-# By Leak id
+print "Sony Leak"
 stats.build_tls_user_graph(2, 10)
 stats.build_esmtp_user_graph(2, 10)
 stats.build_verified_user_graph(2, 10)
 stats.build_cipher_user_graph(2, 10)
+
+print "Gawker Leak"
+stats.build_tls_user_graph(3, 10)
+stats.build_esmtp_user_graph(3, 10)
+stats.build_verified_user_graph(3, 10)
+stats.build_cipher_user_graph(3, 10)
+
+print "Adobe Leak"
+stats.build_tls_user_graph(1, 10)
+stats.build_esmtp_user_graph(1, 10)
+stats.build_verified_user_graph(1, 10)
+stats.build_cipher_user_graph(1, 10)
 
 #print "=== top IP ==="
 #stats.top_ip_domain(50)
