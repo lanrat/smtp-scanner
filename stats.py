@@ -134,20 +134,45 @@ class Stats:
         self.cur.execute("select tls, count(tls) num from (select servers.tls tls from domains join domains_mx on domains.id = domains_mx.domain_id join mx_servers on mx_servers.mx_id = domains_mx.mx_id join servers on servers.id = mx_servers.server_id where domains.rank <= %d group by domains_mx.domain_id order by domains.rank) group by tls order by num desc;" % (rank))
         return self.cur.fetchall()
 
-    def get_users_stats_tls(self,users=100):
-        self.cur.execute("select tls, count(tls) num from (select servers.tls tls from domains join domains_mx on domains.id = domains_mx.domain_id join mx_servers on mx_servers.mx_id = domains_mx.mx_id join servers on servers.id = mx_servers.server_id where domains.rank <= %d group by domains_mx.domain_id order by domains.rank) group by tls order by num desc;" % (rank))
+    def get_users_stats_tls(self,users=0,leak=2):
+        if users > 0:
+            self.cur.execute("select dom, tls, sum(count) s from (select main.domains.domain dom, email_counts.counts.count count, servers.tls tls from main.domains join domains_mx on main.domains.id = domains_mx.domain_id join mx_servers on mx_servers.mx_id = domains_mx.mx_id join servers on servers.id = mx_servers.server_id join email_counts.domains on main.domains.domain = email_counts.domains.domain join email_counts.counts on email_counts.domains.id = email_counts.counts.domain_id where email_counts.counts.leak_id = %d group by count order by count desc limit %d) group by tls order by count;" % (leak, users))
+        else:
+            self.cur.execute("select dom, tls, sum(count) s from (select main.domains.domain dom, email_counts.counts.count count, servers.tls tls from main.domains join domains_mx on main.domains.id = domains_mx.domain_id join mx_servers on mx_servers.mx_id = domains_mx.mx_id join servers on servers.id = mx_servers.server_id join email_counts.domains on main.domains.domain = email_counts.domains.domain join email_counts.counts on email_counts.domains.id = email_counts.counts.domain_id where email_counts.counts.leak_id = %d group by count order by count desc) group by tls order by count;" % leak)
         return self.cur.fetchall()
 
     def get_rank_stats_esmtp(self,rank=10):
         self.cur.execute("select esmtp, count(esmtp) num from (select servers.esmtp esmtp from domains join domains_mx on domains.id = domains_mx.domain_id join mx_servers on mx_servers.mx_id = domains_mx.mx_id join servers on servers.id = mx_servers.server_id where domains.rank <= %d group by domains_mx.domain_id order by domains.rank) group by esmtp order by num desc;" % (rank))
         return self.cur.fetchall()
 
+    def get_users_stats_esmtp(self,users=0,leak=2):
+        if users > 0:
+            self.cur.execute("select dom, esmtp, sum(count) s from (select main.domains.domain dom, email_counts.counts.count count, servers.esmtp esmtp from main.domains join domains_mx on main.domains.id = domains_mx.domain_id join mx_servers on mx_servers.mx_id = domains_mx.mx_id join servers on servers.id = mx_servers.server_id join email_counts.domains on main.domains.domain = email_counts.domains.domain join email_counts.counts on email_counts.domains.id = email_counts.counts.domain_id where email_counts.counts.leak_id = %d group by count order by count desc limit %d) group by esmtp order by count;" % (leak, users))
+        else:
+            self.cur.execute("select dom, esmtp, sum(count) s from (select main.domains.domain dom, email_counts.counts.count count, servers.esmtp esmtp from main.domains join domains_mx on main.domains.id = domains_mx.domain_id join mx_servers on mx_servers.mx_id = domains_mx.mx_id join servers on servers.id = mx_servers.server_id join email_counts.domains on main.domains.domain = email_counts.domains.domain join email_counts.counts on email_counts.domains.id = email_counts.counts.domain_id where email_counts.counts.leak_id = %d group by count order by count desc) group by esmtp order by count;" % leak)
+        return self.cur.fetchall()
+
     def get_rank_stats_verified(self,rank=10):
         self.cur.execute("select verified, count(verified) num from (select servers.ssl_verified verified from domains join domains_mx on domains.id = domains_mx.domain_id join mx_servers on mx_servers.mx_id = domains_mx.mx_id join servers on servers.id = mx_servers.server_id where domains.rank <= %d group by domains_mx.domain_id order by domains.rank) group by verified order by num desc;" % (rank))
         return self.cur.fetchall()
 
+    def get_users_stats_verified(self,users=0,leak=2):
+        if users > 0:
+            self.cur.execute("select dom, verified, sum(count) s from (select main.domains.domain dom, email_counts.counts.count count, servers.ssl_verified verified from main.domains join domains_mx on main.domains.id = domains_mx.domain_id join mx_servers on mx_servers.mx_id = domains_mx.mx_id join servers on servers.id = mx_servers.server_id join email_counts.domains on main.domains.domain = email_counts.domains.domain join email_counts.counts on email_counts.domains.id = email_counts.counts.domain_id where email_counts.counts.leak_id = %d group by count order by count desc limit %d) group by verified order by count;" % (leak, users))
+        else:
+            self.cur.execute("select dom, verified, sum(count) s from (select main.domains.domain dom, email_counts.counts.count count, servers.ssl_verified verified from main.domains join domains_mx on main.domains.id = domains_mx.domain_id join mx_servers on mx_servers.mx_id = domains_mx.mx_id join servers on servers.id = mx_servers.server_id join email_counts.domains on main.domains.domain = email_counts.domains.domain join email_counts.counts on email_counts.domains.id = email_counts.counts.domain_id where email_counts.counts.leak_id = %d group by count order by count desc) group by verified order by count;" % leak)
+        return self.cur.fetchall()
+
     def get_rank_stats_cipher(self,rank=10):
         self.cur.execute("select cipher, count(cipher) num from (select servers.ssl_ciper_name cipher from domains join domains_mx on domains.id = domains_mx.domain_id join mx_servers on mx_servers.mx_id = domains_mx.mx_id join servers on servers.id = mx_servers.server_id where domains.rank <= %d group by domains_mx.domain_id order by domains.rank) group by cipher order by num desc;" % (rank))
+        return self.cur.fetchall()
+
+    def get_users_stats_cipher(self,users=0,leak=2):
+        # TODO: ssl_ciper_name => ssl_cipher_name
+        if users > 0:
+            self.cur.execute("select dom, cipher, sum(count) s from (select main.domains.domain dom, email_counts.counts.count count, servers.ssl_ciper_name cipher from main.domains join domains_mx on main.domains.id = domains_mx.domain_id join mx_servers on mx_servers.mx_id = domains_mx.mx_id join servers on servers.id = mx_servers.server_id join email_counts.domains on main.domains.domain = email_counts.domains.domain join email_counts.counts on email_counts.domains.id = email_counts.counts.domain_id where email_counts.counts.leak_id = %d group by count order by count desc limit %d) group by cipher order by count;" % (leak, users))
+        else:
+            self.cur.execute("select dom, cipher, sum(count) s from (select main.domains.domain dom, email_counts.counts.count count, servers.ssl_ciper_name cipher from main.domains join domains_mx on main.domains.id = domains_mx.domain_id join mx_servers on mx_servers.mx_id = domains_mx.mx_id join servers on servers.id = mx_servers.server_id join email_counts.domains on main.domains.domain = email_counts.domains.domain join email_counts.counts on email_counts.domains.id = email_counts.counts.domain_id where email_counts.counts.leak_id = %d group by count order by count desc) group by cipher order by count;" % leak)
         return self.cur.fetchall()
 
     def build_cipher_rank_graph(self, limit, step=10):
@@ -278,11 +303,163 @@ class Stats:
             print s
         print ""
 
+    def build_tls_user_graph(self, leak=2, limit=10, step=1):
+        print "=== user tls %d ===" % (limit)
+        i = step
+        l = list()
+        while i <= limit:
+            l.append(self.get_users_stats_tls(i, leak))
+            i += step
+        l.append(self.get_users_stats_tls(0, leak))
+        if len(l) < 1:
+            return
+        options = list()
+        for i in l:
+            for r in i:
+                if r['tls'] not in options:
+                    options.append(r['tls'])
+        options.sort()
+        '''print header'''
+        j = step
+        s = "RANK\t"
+        for i in l[0:len(l)-1]:
+            s += str(i[0]['dom'])
+            s += '\t'
+        s += 'Other\n'
+        '''
+                for d in i:
+                    if d['tls'] == op:
+                        s += str(d['dom'])
+        '''
+        '''
+        while j <= limit:
+            s += str(j)+'\t'
+            j += step
+        '''
+        print s
+        for op in options:
+            s = str(op)+'\t'
+            for i in l:
+                for d in i:
+                    if d['tls'] == op:
+                        s += str(d['s'])
+                s +='\t'
+            print s
+        print ""
+
+    def build_esmtp_user_graph(self, leak=2, limit=10, step=1):
+        print "=== user esmtp %d ===" % (limit)
+        i = step
+        l = list()
+        while i <= limit:
+            l.append(self.get_users_stats_esmtp(i, leak))
+            i += step
+        l.append(self.get_users_stats_esmtp(0, leak))
+        if len(l) < 1:
+            return
+        options = list()
+        for i in l:
+            for r in i:
+                if r['esmtp'] not in options:
+                    options.append(r['esmtp'])
+        options.sort()
+        '''print header'''
+        j = step
+        s = "RANK\t"
+        for i in l[0:len(l)-1]:
+            s += str(i[0]['dom'])
+            s += '\t'
+        s += 'Other\n'
+        print s
+        for op in options:
+            s = str(op)+'\t'
+            for i in l:
+                for d in i:
+                    if d['esmtp'] == op:
+                        s += str(d['s'])
+                s +='\t'
+            print s
+        print ""
+
+    def build_verified_user_graph(self, leak=2, limit=10, step=1):
+        print "=== user verified %d ===" % (limit)
+        i = step
+        l = list()
+        while i <= limit:
+            l.append(self.get_users_stats_verified(i, leak))
+            i += step
+        l.append(self.get_users_stats_verified(0, leak))
+        if len(l) < 1:
+            return
+        options = list()
+        for i in l:
+            for r in i:
+                if r['verified'] not in options:
+                    options.append(r['verified'])
+        options.sort()
+        '''print header'''
+        j = step
+        s = "RANK\t"
+        for i in l[0:len(l)-1]:
+            s += str(i[0]['dom'])
+            s += '\t'
+        s += 'Other\n'
+        print s
+        for op in options:
+            s = str(op)+'\t'
+            for i in l:
+                for d in i:
+                    if d['verified'] == op:
+                        s += str(d['s'])
+                s +='\t'
+            print s
+        print ""
+
+    def build_cipher_user_graph(self, leak=2, limit=10, step=1):
+        print "=== user cipher %d ===" % (limit)
+        i = step
+        l = list()
+        while i <= limit:
+            l.append(self.get_users_stats_cipher(i, leak))
+            i += step
+        l.append(self.get_users_stats_cipher(0, leak))
+        if len(l) < 1:
+            return
+        options = list()
+        for i in l:
+            for r in i:
+                if r['cipher'] not in options:
+                    options.append(r['cipher'])
+        options.sort()
+        '''print header'''
+        j = step
+        s = "RANK\t"
+        for i in l[0:len(l)-1]:
+            s += str(i[0]['dom'])
+            s += '\t'
+        s += 'Other\n'
+        print s
+        for op in options:
+            s = str(op)+'\t'
+            for i in l:
+                for d in i:
+                    if d['cipher'] == op:
+                        s += str(d['s'])
+                s +='\t'
+            print s
+        print ""
+
 
 stats = Stats(sys.argv[1])
 stats.get_esmtp()
 stats.get_tls()
 stats.get_ssl_cert()
+
+# By Leak id
+stats.build_tls_user_graph(2, 10)
+stats.build_esmtp_user_graph(2, 10)
+stats.build_verified_user_graph(2, 10)
+stats.build_cipher_user_graph(2, 10)
 
 #print "=== top IP ==="
 #stats.top_ip_domain(50)
