@@ -450,7 +450,7 @@ class Stats:
         print ""
 
 
-stats = Stats(sys.argv[1])
+stats = Stats(sys.argv[1], sys.argv[2])
 #stats.get_esmtp()
 #stats.get_tls()
 #stats.get_ssl_cert()
@@ -474,12 +474,12 @@ stats.build_verified_user_graph(1, 10)
 stats.build_cipher_user_graph(1, 10)
 
 #print "=== top IP ==="
-#stats.top_ip_domain(50)
+stats.top_ip_domain(50)
 
 #print "=== top MX ==="
-#stats.top_mx()
+stats.top_mx()
 
-#stats.print_top_domain_info(20)
+stats.print_top_domain_info(20)
 
 #stats.build_esmtp_rank_graph(100000,2000)
 
@@ -490,6 +490,6 @@ stats.build_cipher_user_graph(1, 10)
 #stats.build_tls_rank_graph(1000000,20000)
 #stats.build_verified_rank_graph(1000000,20000)
 
-#stats.build_cipher_rank_graph(10000,100)
+stats.build_cipher_rank_graph(10000,100)
 
 #stats.get_top_ten()
