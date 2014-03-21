@@ -1,0 +1,17 @@
+\documentclass[11pt, twocolumn]{article}
+\usepackage{graphicx}
+
+\author{Ian Foster, Jon Larson, and Max Masich}
+\title{Study of SMTP Security}
+\date{}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+The Simple Mail Transfer Protocol (SMTP) and related Extended SMTP (ESMTP) are the primary means of delivering email messages between servers over the internet today.  Internet traffic can easily be collected by third-parties, yet encryption of SMTP messages is not universal, and in fact cannot be required by a Mail Exchange (MX) server.  This means that it is possible for an inter-domain email to be transferred and/or stored as plain-text at at least one point on its path across the internet.  This paper provides an analysis of current email providers and their support for TLS encryption over SMTP.  We show that while a majority of SMTP servers do provide support for TLS, almost half of all email users use a provider that does not support TLS encryption according to the standard ESMTP protocol.  We further show that of those email providers that ostensibly support TLS, a number of them are configured such that their true security is suspect (e.g. invalid certificates, weak ciphers).  Our aim is to raise awareness of the vulnerabilities present in the current SMTP environment
+on the internet.
+\end{abstract}
+
+\input{intro}
+
+\end{document}
