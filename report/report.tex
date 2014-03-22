@@ -1,9 +1,13 @@
 \documentclass[11pt, twocolumn]{article}
 \usepackage{graphicx}
 \usepackage{url}
+\usepackage{listings}
+\setlength{\columnsep}{0.3in}
+\usepackage[margin=1in]{geometry}
+\linespread{1.05}
 
 \author{Ian Foster, Jon Larson, and Max Masich}
-\title{Study of SMTP [in]Security}
+\title{A Study of SMTP [in]Security}
 \date{}
 
 \begin{document}
@@ -43,23 +47,41 @@ of SMTP TLS certificate validity.
 \input{future}
 \input{conclusion}
 
-
 \begin{thebibliography}{1}
     \bibitem{alexa}
-        Alexa Top 1,000,000 Sites\linebreak
+        Alexa Top 1,000,000 Sites
+
         \url{http://www.alexa.com/topsites/global}
     \bibitem{https}
-        Analysis of the HTTPS Certiﬁcate Ecosystem\linebreak
+        Analysis of the HTTPS Certiﬁcate Ecosystem
+
         \url{http://web.eecs.umich.edu/~mibailey/publications/imc13\_https\_final.pdf}
     \bibitem{adobe}
-        Adobe Email Leak\linebreak
+        Adobe Email Leak
+
         \url{http://www.theguardian.com/technology/2013/nov/07/adobe-password-leak-can-check}
     \bibitem{gawker}
-        Gawker Email Leak\linebreak
+        Gawker Email Leak
+
         \url{http://www.slate.com/articles/technology/technology/2010/12/was\_your\_gawker\_password\_hacked.html}
     \bibitem{sony}
-        Sony Email Leak\linebreak
-\end{thebibliography}
+        Sony Email Leak
+    \bibitem{821}
+        RFC 821
 
+        \url{http://tools.ietf.org/html/rfc821}
+    \bibitem{2487}
+        RFC 2487
+
+        \url{http://tools.ietf.org/html/rfc2487}
+    \bibitem{code}
+        Project Code
+
+        \url{https://github.com/lanrat/smtp-scanner}
+    \bibitem{mail}
+        Mail Parameters
+
+        \url{http://www.iana.org/assignments/mail-parameters/mail-parameters.xhtml}
+\end{thebibliography}
 
 \end{document}

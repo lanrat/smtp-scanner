@@ -1,6 +1,6 @@
 
 
-TEX = report.tex intro.tex machine.tex
+TEX = report.tex 
 
 all:
 	pdflatex ${TEX}

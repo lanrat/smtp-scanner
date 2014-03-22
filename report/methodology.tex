@@ -1,37 +1,96 @@
 \section{Methodology}
 \subsection{Collecting User Distributions}
-In order to determine user distribution of popular email providers we acquired user leaks from Sony, having 20,000 records from 2011[], Gawker having 500,000 records from 2010[], and Adobe having 141 Million records from 2013[3]. From these leaks we would get a good idea of what mail providers were popular, and the approximate user distributions among them. It should be noted that our three data sources may be biased towards a U.S. users distribution.
+In order to determine user distribution of popular email providers, we acquired 
+user leaks from Sony (from 2011, having 20,000 records)\cite{sony}, Gawker (from 2010, 
+having 500,000 records)\cite{gawker}, and Adobe (from 2013, having 141 million 
+records)\cite{adobe}. From these leaks we would get a good idea of what mail 
+providers were popular, and the approximate user distributions among them. 
+
+It should be noted that it is difficult to accurately assess the distribution of 
+users among all email providers.  One concern of ours was that our three data 
+sources may be biased towards a U.S. users distribution.  However, due to the 
+large dataset (approximately 140 million records), the presence of five foreign 
+email providers in the top ten email providers, and the relatively recent 
+acquisition of the list of emails, we feel that the data from the Adobe leak 
+provides a reasonably fair portrayal of current user distribution.  The results 
+from the Gawker leak probably skew even more to American users and the list is a 
+little more dated, but the large sample size (admittedly much smaller than 
+Adobe) nevertheless made it a useful tool for getting an idea of user 
+distribution.  Results from the Sony leak did not prove to be useful, mainly due 
+to its small size. 
 
 \subsection{Scanning SMTP Servers}
-Lists of domains were collected from the above mentioned user leaks, The Alexa Top Million Sites Index[1], and some of the DNS root zone files. For each domain we performed a DNS query for its MX records, and then for all of the MX record’s IP addresses. If no MX records are found for a domain we use the domain as it’s own MX record.. (For the purposes of this study we only collected IPv4 A records due to the fact that Ipv6 AAAA adoption for email is minimal and out testing machine did not have IPv6 connectivity.)
+Lists of domains were collected from the above mentioned user leaks, The Alexa 
+Top Million Sites Index\cite{alexa}, and some of the DNS root zone files. For each domain 
+we performed a DNS query for its MX records, and then for all of the MX record’s 
+IP addresses. If no MX records are found for a domain we use the domain as its 
+own MX record.. (For the purposes of this study we only collected IPv4 A records 
+due to the fact that IPv6 AAAA adoption for email is minimal and our testing 
+machine did not have IPv6 connectivity.)
 
-We also performed round robin on publicly available DNS servers to prevent rate limiting.
+We faced several issues when setting up our scanning service.  First, we had to 
+avoid being rate limited by DNS servers as we collected MX records of domains we 
+were examining.  We attempted to set up our own DNS server, but were thwarted in 
+our efforts when we realized our machine did not have the necessary RAM.  
+Instead, used a round robin approach using publicly available DNS servers.
+
+We also found that some SMTP servers would not respond to our simple EHLO 
+commands, including some of the top email providers (e.g. gmx.com).  We found 
+that in some cases, our initial timeout value of five seconds was too short to 
+establish a socket connection.  Raising that timeout to 10 seconds allowed us to 
+connect many more hosts.  In other cases, we found that not having a valid 
+identifier for the EHLO command resulted in the host terminating the connection. 
+Changing the identifier to a valid domain resolved this issue.
 
 For every domain’s mail server’s IPs we collected the following information:
+\lstset{breaklines=true}
 \begin{itemize}
     \item ESMTP Support
+        Supported if the server responds with 220 to an EHLO command
     \item TLS Support
+    \begin{itemize}
+        \item Supported if the server responds with 220 to a STARTTLS commands
+    \end{itemize}
     \item SSL Cipher Used
     \item SSL Cipher Bits
     \item The SSL Certificate provided by the server
+    \begin{itemize}
+        \item Discovered by opening a secure socket connection to the server
+    \end{itemize}
 \end{itemize}
 
-Due to much of the scanning process being slowed down waiting for servers to respond due to network latency, we parallelized the SMTP scanning process. When running with 128 parallel requests we were able collect data for an average of 40 domains per second.
-
-All data collected was put into a relational sqlite3 database for analysis.
+Due to much of the scanning process being slowed down waiting for servers to 
+respond due to network latency, we parallelized the SMTP scanning process. When 
+running with 128 parallel requests we were able collect data for an average of 
+40 domains per second.  All data collected was put into a relational sqlite3 
+database for analysis. Our SMTP scanning program is open source and freely 
+available on GitHub\cite{code}.
 
 \subsection{Collecting Email SMTP Headers}
-After collecting security data on the SMTP servers of one million email providers and domain names, we attempted to determine what security measures were actually implemented when sending inter-domain emails among the top email providers.  To this end, we acquired accounts at seven of the top providers (outlook.com, gmail.com, yahoo.com, aol.com, web.de, gmx.de, mail.ru).  We had hoped to sign up for more accounts, but met barriers both financial (e.g. needing to pay for internet service for a comcast.net account) and geographical (e.g. needing a Chinese cell phone number to sign up for a qq.com account).
+After collecting security data on the SMTP servers of one million email 
+providers and domain names, we attempted to determine what security measures 
+were actually implemented when sending inter-domain emails among the top email 
+providers.  To this end, we acquired accounts at seven of the top providers 
+(outlook.com, gmail.com, yahoo.com, aol.com, web.de, gmx.de, mail.ru).  We had 
+hoped to sign up for more accounts, but met barriers both financial (e.g. 
+needing to pay for internet service for a comcast.net account) and geographical 
+(e.g. needing a Chinese cell phone number to sign up for a qq.com account).
 
-We then sent an email from each account to each of the other accounts and examined the SMTP headers, in particular the “Received” fields.  These fields are added to the header upon receipt at each server, showing the sender and receiver as well as the protocol and security measures used in the transfer.  For example, the following field from the header of an email sent from gmx.de to aol.com shows that TLSv1 encryption was used:
+We then sent an email from each account to each of the other accounts and 
+examined the SMTP headers, in particular the “Received” fields.  These fields 
+are added to the header upon receipt at each server, showing the sender and 
+receiver as well as the protocol and security measures used in the transfer.  
+For example, the following field from the header of an email sent from gmx.de to 
+aol.com shows that TLSv1 encryption was used:
 
-\begin{verbatim}
+\begin{lstlisting}
 Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
   (using TLSv1 with cipher DHE-RSA-AES128-SHA (128/128 bits))
   (No client certificate requested)
   by mtain-dk12.r1000.mx.aol.com (Internet Inbound) with ESMTPS
-  id 264DF38000098 for <username@aol.com>; Tue, 18 Mar 2014 20:58:36 -0400 (EDT)
-\end{verbatim}
+  id 264DF38000098 for <username@aol.com>; Tue, 18 Mar 2014 20:58:36-0400 (EDT)
+\end{lstlisting}
 
-Based on these headers, we could see which pairs of providers use encryption when sending inter-domain emails.
+Based on these headers, we could see which pairs of providers use encryption 
+when sending inter-domain emails.
 

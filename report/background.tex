@@ -1,4 +1,24 @@
 \section{Background}
-As the ARPANET grew throughout the 1970s, researchers started designing ways of sending messages to other users on remote hosts, using already standardized protocols such as FTP.  By 1979, there were already a myriad of incompatible standards, and researchers began to devise a unified standard for transferring mail (RFC 808).  In 1981, the Simple Mail Transfer protocol was first proposed in RFC 788, and later standardized in RFC 821. However, these early versions of SMTP did not include any support for encryption. It wasn't until 1995 that Extended SMTP (ESMTP) was standardized, which allowed for arbitrary extensions to the base SMTP protocol, including the support of TLS for SMTP (RFC 2487).  Even with the addition of TLS support, SMTP servers are still not allowed to require encryption so that they can be backward-compatible.
+As the ARPANET grew throughout the 1970s, researchers started designing ways of 
+sending messages to other users on remote hosts, using already standardized 
+protocols such as FTP.  By 1979, there were already a myriad of incompatible 
+standards, and researchers began to devise a unified standard for transferring 
+mail (RFC 808).  In 1981, the Simple Mail Transfer protocol was first proposed 
+in RFC 788, and later standardized in RFC 821. However, these early versions of 
+SMTP did not include any support for encryption\cite{821}. It wasn't until 1995 that 
+Extended SMTP (ESMTP) was standardized, which allowed for arbitrary extensions 
+to the base SMTP protocol, including the support of TLS for SMTP (RFC 2487).  
+Even with the addition of TLS support, SMTP servers are still not allowed to 
+require encryption so that they can be backward-compatible\cite{2487}.
 
-Today, the basic process of sending an email is the following: the sending client submits a message to a Mail Submission Agent (MSA), which sends the message to a Mail Transfer Agent (MTA).  The MTA issues a DNS query to get the Mail Exchange (MX) records of the destination address, and sends the message to this server.  From there, the message is relayed (possibly using multiple MX record queries and forwards) to a Mail Delivery Agent (MDA).  Finally, the MDA delivers the message to the destination client.  It is important to note that both submission and delivery (Sender to MSA and MDA to Recipient) may use a number of different protocols, including HTTP and SMTP (on port 587) for submission and POP3 and IMAP for delivery.  However, the transfer from MTA to MX server is always done using SMTP on port 25.
+Today, the basic process of sending an email is the following: the sending 
+client submits a message to a Mail Submission Agent (MSA), which sends the
+message to a Mail Transfer Agent (MTA).  The MTA issues a DNS query to get the 
+Mail Exchange (MX) records of the destination address, and sends the message to 
+this server.  From there, the message is relayed (possibly using multiple MX 
+record queries and forwards) to a Mail Delivery Agent (MDA).  Finally, the MDA 
+delivers the message to the destination client.  It is important to note that 
+both submission and delivery (Sender to MSA and MDA to Recipient) may use a 
+number of different protocols, including HTTP and SMTP (on port 587) for 
+submission and POP3 and IMAP for delivery.  However, the transfer from MTA to 
+MX server is always done using SMTP on port 25.
