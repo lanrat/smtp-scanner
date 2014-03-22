@@ -64,8 +64,8 @@ live.com).
 \subsection{TLS Support}
 We first looked at just the proportion of email providers that support the 
 STARTTLS command, ranked in order of number of users (as found in the Adobe 
-leak).  We already know from figure \ref{server_tls} that of the top 10, only 50% 
-support TLS.  As can be seen in figure \ref{sever_tls}, of the top 2000 providers, 
+leak).  We already know from table \ref{table:adobe} that of the top 10, only 
+50\% support TLS.  As can be seen in figure \ref{server_tls}, of the top 2000 providers, 
 only 47.94\% support TLS.  We were surprised to see, however, that support for 
 TLS actually increases as we looked at more and more providers, such that of the 
 top 20,000 providers, 57.63\% supported TLS, and at 100,000 the number leveled 
@@ -80,15 +80,15 @@ mail servers, which support TLS, instead of setting up their own.
 \end{figure}
 
 \begin{figure}
-    \includegraphics[width=3.0in]{images/server_verified.png}
-    \caption{Valid SSL Cert by Server}
-    \label{server_verified}
+    \includegraphics[width=3.0in]{images/adobe_tls.png}
+    \caption{Adobe TLS Support}
+    \label{adobe_tls}
 \end{figure}
 
 \begin{figure}
-    \includegraphics[width=3.0in]{images/server_ciphers.png}
-    \caption{Cipher by Server}
-    \label{server_ciphers}
+    \includegraphics[width=3.0in]{images/gawker_tls.png}
+    \caption{Gawker TLS Support}
+    \label{gawker_tls}
 \end{figure}
 
 When we look at the proportion of actual users that have TLS support, however, 
@@ -122,6 +122,30 @@ have known weaknesses are RC4-MD5 and RC4-SHA, together they are used by less
 than 0.06\% of the servers in this study.
 
 \begin{figure}
+    \includegraphics[width=3.0in]{images/server_verified.png}
+    \caption{Valid SSL Cert by Server}
+    \label{server_verified}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=3.0in]{images/adobe_verified.png}
+    \caption{Adobe Valid Cert}
+    \label{adobe_verified}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=3.0in]{images/gawker_verified.png}
+    \caption{Gawker Valid Cert}
+    \label{gawker_verified}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=3.0in]{images/server_ciphers.png}
+    \caption{Cipher by Server}
+    \label{server_ciphers}
+\end{figure}
+
+\begin{figure}
     \includegraphics[width=3.0in]{images/pie_ciphers.png}
     \caption{Cipher Pie (Yum!)}
     \label{cipher_pie}
@@ -137,7 +161,7 @@ certificate.
 
 \begin{figure}
     \includegraphics[width=3.0in]{images/bar_overall.png}
-    \caption{Overall Picture}
+    \caption{TLS Adoption by Domain}
     \label{overall}
 \end{figure}
 
@@ -201,7 +225,7 @@ provider is in control of.
         \hline
         Google & 11.03\% \\
         Microsoft & 3.45\% \\ 
-        Godaddy & 2.06\% \\
+        GoDaddy & 2.06\% \\
         MX Logic & 1.58\% \\
         RackSpace & 1.32\% \\
         \hline
